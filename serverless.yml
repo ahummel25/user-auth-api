@@ -13,42 +13,19 @@
 
 service:
   name: user-auth-api
-# app and org for use with dashboard.serverless.com
-#app: your-app-name
-#org: your-org-name
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 frameworkVersion: '>=2.0.0'
 
+custom:
+  vpc: ${file(./${self:provider.stage}.yml):vpc}
+
 provider:
   name: aws
   runtime: provided.al2
-  timeout: 30
-
-# you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
-
-# you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:PutObject"
-#      Resource:
-#        Fn::Join:
-#          - ""
-#          - - "arn:aws:s3:::"
-#            - "Ref" : "ServerlessDeploymentBucket"
-#            - "/*"
-
-# you can define service wide environment variables here
-#  environment:
-#    variable1: value1
+  stage: ${opt:stage, 'dev'}
+  timeout: 10
 
 package:
   exclude:
@@ -64,6 +41,8 @@ functions:
       - http:
           path: hello
           method: get
+    vpc: ${self:custom.vpc}
+
   world:
     handler: my.bootstrap.file
     package:
@@ -72,6 +51,7 @@ functions:
       - http:
           path: world
           method: get
+    vpc: ${self:custom.vpc}
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details

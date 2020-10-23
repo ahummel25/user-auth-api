@@ -39,3 +39,55 @@ module "vpc" {
     Env         = var.all_tags["Env"]
   }
 }
+
+######
+# SG #
+######
+module "security_group" {
+  source = "terraform-aws-modules/security-group/aws"
+
+  name        = "${var.name}-security-group"
+  description = "Security group for user auth api"
+
+  vpc_id = module.vpc.vpc_id
+
+  ingress_with_self = [{
+    rule = "all-all"
+  }]
+
+  ingress_with_cidr_blocks = [
+    {
+      rule        = "ssh-tcp"
+      cidr_blocks = var.sg_cidr_block
+    },
+    {
+      from_port   = 5080
+      to_port     = 5080
+      protocol    = "tcp"
+      description = "Default Web Access for Red5Pro"
+      cidr_blocks = var.sg_cidr_block
+    },
+    {
+      from_port   = 6262
+      to_port     = 6262
+      protocol    = "tcp"
+      description = "Websocket port for Red5Pro"
+      cidr_blocks = var.sg_cidr_block
+    },
+  ]
+
+  egress_with_cidr_blocks = [
+    {
+      from_port   = 0
+      to_port     = 0
+      protocol    = -1
+      cidr_blocks = var.sg_cidr_block
+    },
+  ]
+
+  tags = {
+    Application = var.all_tags["Application"]
+    Project     = var.all_tags["Project"]
+    Env         = var.all_tags["Env"]
+  }
+}
