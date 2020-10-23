@@ -1,0 +1,50 @@
+service: api
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: '>=3.30.0'
+
+plugins:
+    - serverless-domain-manager
+
+custom:
+    customDomain:
+        domainName: ${self:custom.domain.${self:provider.stage}}
+        certificateName: '*.andrewhummel.dev'
+        basePath: ''
+        stage: ${self:provider.stage}
+        createRoute53Record: false
+    commonPrefix: ${self:service}-${self:provider.stage}
+    domain:
+        dev: api-dev.andrewhummel.dev
+        prod: api.andrewhummel.dev
+    # vpc: ${file(./${self:provider.stage}.yml):vpc}
+
+provider:
+    name: aws
+    runtime: provided.al2
+    versionFunctions: false
+    tracing:
+        apiGateway: true
+        lambda: true
+    apiGateway:
+        shouldStartNameWithService: true
+    logs:
+        restApi:
+            accessLogging: true
+            executionLogging: true
+            fullExecutionData: true
+            level: INFO
+            role: 'arn:aws:iam::${aws:accountId}:role/${self:service}-apigw-role'
+            roleManagedExternally: true
+    logRetentionInDays: 14
+    stage: ${opt:stage, 'dev'}
+    timeout: 10
+
+package:
+    patterns:
+        - '!vscode/**'
+    individually: true
+
+functions:
+    graphql: ${file(lambda/graphql/function.yml)}
