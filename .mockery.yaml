@@ -1,0 +1,10 @@
+dir: mocks/{{ replaceAll .InterfaceDirRelative "internal" "internal_" }} 
+mockname: "{{.InterfaceName}}"
+outpkg: "{{.PackageName}}"
+filename: "{{.InterfaceName}}.go"
+all: True
+packages:
+  github.com/ahummel25/user-auth-api/service/user:
+    config:
+      recursive: True
+      with-expecter: True
