@@ -1,0 +1,20 @@
+handler: my.bootstrap.file
+package:
+    artifact: ./build/packages/graphql.zip
+description: Function to handle requests against the API GraphQL schema
+environment:
+    SECRET_NAME: api/${self:provider.stage}
+events:
+    - http:
+          method: GET
+          path: apollo
+    - http:
+          method: GET
+          path: graphiql
+    - http:
+          cors: true
+          method: POST
+          path: graphql
+role: 'arn:aws:iam::${aws:accountId}:role/${self:service}-lambda-role'
+timeout: 30
+#vpc: ${self:custom.vpc}
