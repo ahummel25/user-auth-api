@@ -1,0 +1,4 @@
+APP_NAME: DevCluster
+DB_CLUSTER_NAME: devcluster
+DB_DOMAIN: w1rjj.mongodb.net
+IAM_ROLE_ARN: arn:aws:iam::${aws:accountId}:role/mongoAssumeRole
