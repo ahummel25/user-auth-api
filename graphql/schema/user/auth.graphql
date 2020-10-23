@@ -1,0 +1,7 @@
+"The input needed to authenticate a user."
+input AuthParams {
+    "The user's username or email address"
+    usernameOrEmail: String!
+    "The user's password"
+    password: String!
+}
