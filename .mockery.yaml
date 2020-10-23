@@ -1,0 +1,13 @@
+with-expecter: True
+inpackage: True
+issue-845-fix: True
+mockname: "Mock{{.InterfaceName}}"
+outpkg: "{{.PackageName}}"
+filename: "{{.InterfaceName}}.go"
+all: True
+resolve-type-alias: False
+packages:
+  github.com/ahummel25/user-auth-api/service/user:
+    config:
+      dir: "service/user/mocks"
+      recursive: True
