@@ -1,0 +1,90 @@
+name: Deploy Infrastructure
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy-infrastructure-to-dev:
+    environment: development
+    name: Deploy Infrastructure to Dev
+    runs-on: ubuntu-latest
+    env:
+      env: 'dev'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Terragrunt
+        uses: autero1/action-terragrunt@v1.0.0
+        with:
+          terragrunt_version: 0.28.2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 3600
+
+      - name: Run Terragrunt
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          MONGO_ORG_ID: ${{ secrets.MONGO_ORG_ID }}
+          MONGO_PRIVATE_KEY: ${{ secrets.MONGO_PRIVATE_KEY }}
+          MONGO_PUBLIC_KEY: ${{ secrets.MONGO_PUBLIC_KEY }}
+        run: |
+          # make file runnable, might not be necessary
+          chmod +x "${GITHUB_WORKSPACE}/.github/terragrunt.sh"
+
+          # run script
+          "${GITHUB_WORKSPACE}/.github/terragrunt.sh" ${{ env.env }}
+
+  test-and-deploy-api-to-dev:
+    needs: [deploy-infrastructure-to-dev]
+    environment: development
+    name: Test and deploy API to Dev
+    runs-on: ubuntu-latest
+    env:
+      env: 'dev'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 3600
+
+      - name: Test
+        run: |
+          mkdir -p output/test
+          go test ./... -covermode=count -coverprofile output/test/code-coverage.out
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage-report
+          path: output/test/code-coverage.out
+          retention-days: 5
+
+      - name: Install Dependencies
+        run: |
+          echo "NPM version - $(npm -v)"
+          echo "Node version - $(node -v)"
+          sudo npm install -g serverless
+          sudo npm install
+
+      - name: Build
+        run: make build
+
+      - name: Deploy
+        run: AWS_SDK_LOAD_CONFIG=1 sls deploy --stage ${{ env.env }} --verbose
