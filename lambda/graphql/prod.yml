@@ -1,0 +1,4 @@
+APP_NAME: ProdCluster
+DB_CLUSTER_NAME: prodcluster
+DB_DOMAIN: j8ib5.mongodb.net
+IAM_ROLE_ARN: arn:aws:iam::${aws:accountId}:role/mongoAssumeRole
