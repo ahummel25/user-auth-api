@@ -1,0 +1,67 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+enum Action {
+    "Create User Action"
+    CREATE_USER
+    "Delete User Action"
+    DELETE_USER
+}
+
+enum Role {
+    "ADMIN Role"
+    ADMIN
+    "USER Role"
+    USER
+}
+
+type Query {
+    "Query to handle a user login request."
+    authenticateUser(params: AuthParams!): UserObject!
+}
+
+type Mutation {
+    "Mutation to handle a new user creation request."
+    createUser(user: CreateUserInput!): UserObject!
+        @hasRole(role: ADMIN, action: CREATE_USER)
+    "Mutation to handle an existing user deletion request."
+    deleteUser(userID: ID!): Boolean! @hasRole(role: ADMIN, action: DELETE_USER)
+}
+
+"An object representing an individual user."
+type User {
+    "The user's unique user ID"
+    ID: ID!
+    "The user's e-mail address"
+    email: String!
+    "The user's first name"
+    firstName: String!
+    "The user's last name"
+    lastName: String!
+    "The user's username"
+    userName: String!
+    "The user's role"
+    role: Role!
+}
+
+type UserObject {
+    "The user object pertaining to the given user."
+    user: User!
+}
+
+"The input required to create a new user."
+input CreateUserInput {
+    "The user's e-mail address"
+    email: String! @binding(constraint: "required,email")
+    "The user's first name"
+    firstName: String!
+    "The user's last name"
+    lastName: String!
+    "The user's username"
+    userName: String!
+    "The user's role"
+    role: Role
+    "The user's password"
+    password: String!
+}
