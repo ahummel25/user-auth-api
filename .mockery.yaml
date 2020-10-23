@@ -1,0 +1,11 @@
+with-expecter: True
+inpackage: True
+mockname: "Mock{{.InterfaceName}}"
+outpkg: "{{.PackageName}}"
+filename: "{{.InterfaceName}}.go"
+all: True
+packages:
+  github.com/ahummel25/user-auth-api/service/user:
+    config:
+      dir: "service/user/mocks"
+      recursive: True
