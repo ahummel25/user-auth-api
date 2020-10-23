@@ -1,0 +1,29 @@
+{
+    "extends": [
+        "config:base",
+        ":dependencyDashboard",
+        ":semanticCommits",
+        ":enableVulnerabilityAlertsWithLabel(security)",
+        "schedule:weekdays"
+    ],
+    "packageRules": [
+        {
+            "matchUpdateTypes": [
+                "minor",
+                "patch"
+            ],
+            "matchCurrentVersion": "!/^0/",
+            "automerge": false
+        },
+        {
+            "matchDepTypes": [
+                "devDependencies"
+            ],
+            "automerge": false
+        }
+    ],
+    "timezone": "America/Chicago",
+    "prHourlyLimit": 2,
+    "prConcurrentLimit": 10,
+    "branchConcurrentLimit": 20
+}
