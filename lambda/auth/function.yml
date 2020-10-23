@@ -1,0 +1,16 @@
+handler: my.bootstrap.file
+package:
+    artifact: ./build/packages/auth.zip
+environment:
+    SECRET_NAME: andrewhummel/api/${self:provider.stage}
+events:
+    - http:
+          method: GET
+          path: graphiql
+    - http:
+          cors: true
+          method: POST
+          path: graphql
+role: 'arn:aws:iam::${aws:accountId}:role/${self:custom.commonPrefix}-auth-lambdaRole'
+timeout: 30
+#vpc: ${self:custom.vpc}
