@@ -30,7 +30,6 @@ func LambdaHandler(
 		}
 		responseBody []byte
 		result       *graphql.Result
-		schema       graphql.Schema
 	)
 
 	if err = json.Unmarshal([]byte(request.Body), &payload); err != nil {
@@ -39,9 +38,7 @@ func LambdaHandler(
 		return response, nil
 	}
 
-	schema = g.BuildGraphQLSchema()
-
-	if result, gqlErr = g.ExecuteQuery(payload, schema); gqlErr.Message != "" {
+	if result, gqlErr = g.ExecuteQuery(payload); gqlErr.Message != "" {
 		response = utils.BuildErrorResponse(response, gqlErr.Message)
 
 		return response, nil
