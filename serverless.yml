@@ -57,14 +57,14 @@ package:
   individually: true
 
 functions:
-  hello:
-    handler: bootstrap
+  auth:
+    handler: my.bootstrap.file
     package:
-      artifact: ./build/packages/hello.zip
+      artifact: ./build/packages/auth.zip
     events:
       - http:
-          path: hello
-          method: get
+          path: auth
+          method: post
     vpc: ${self:custom.vpc}
 
   world:
