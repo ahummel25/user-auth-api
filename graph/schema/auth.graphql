@@ -1,0 +1,4 @@
+input AuthParams {
+  username: String!
+  password: String!
+}

@@ -1,0 +1,7 @@
+handler: my.bootstrap.file
+package:
+  artifact: ./build/packages/auth.zip
+events:
+  - http: ANY {proxy+}
+  - http: ANY /
+vpc: ${self:custom.vpc}

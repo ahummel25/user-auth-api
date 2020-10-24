@@ -49,7 +49,7 @@ provider:
               - Ref: AWS::AccountId
               - function:${self:service}-${opt:stage, self:provider.stage}-*
   stage: ${opt:stage, 'dev'}
-  timeout: 100
+  timeout: 10
 
 package:
   exclude:
@@ -57,25 +57,7 @@ package:
   individually: true
 
 functions:
-  auth:
-    handler: my.bootstrap.file
-    package:
-      artifact: ./build/packages/auth.zip
-    events:
-      - http:
-          path: auth
-          method: post
-    vpc: ${self:custom.vpc}
-
-  world:
-    handler: my.bootstrap.file
-    package:
-      artifact: ./build/packages/world.zip
-    events:
-      - http:
-          path: world
-          method: get
-    vpc: ${self:custom.vpc}
+  auth: ${file(lambda/auth/function.yml)}
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details

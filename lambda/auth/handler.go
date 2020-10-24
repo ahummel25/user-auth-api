@@ -1,57 +1,63 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
-	"net/http"
+	"context"
 
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/graphql-go/graphql"
-	"github.com/graphql-go/graphql/gqlerrors"
+	"github.com/awslabs/aws-lambda-go-api-proxy/gorillamux"
+	"github.com/gorilla/mux"
 
-	g "github.com/src/user-auth-api/graphql"
+	"github.com/src/user-auth-api/graph/generated"
+	"github.com/src/user-auth-api/graph/resolver"
+	"github.com/src/user-auth-api/services"
 	"github.com/src/user-auth-api/utils"
 )
 
+var muxAdapter *gorillamux.GorillaMuxAdapter
+
+func init() {
+	r := mux.NewRouter()
+
+	authService := services.NewAuthService()
+
+	resolvers := resolver.Resolver{
+		AuthService: authService,
+	}
+
+	// From server.go
+	schema := generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})
+	server := handler.NewDefaultServer(schema)
+
+	r.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+	r.Handle("/graphql", server)
+
+	muxAdapter = gorillamux.New(r)
+}
+
 // LambdaHandler is our lambda handler invoked by the `lambda.Start` function call
 func LambdaHandler(
+	ctx context.Context,
 	request events.APIGatewayProxyRequest,
 ) (events.APIGatewayProxyResponse, error) {
 	var (
-		buf      *bytes.Buffer
 		err      error
-		gqlErr   gqlerrors.FormattedError
-		payload  g.RequestInput
 		response = events.APIGatewayProxyResponse{
 			Headers: map[string]string{
 				"Content-Type": "application/json",
 			},
 			IsBase64Encoded: false,
 		}
-		responseBody []byte
-		result       *graphql.Result
 	)
 
-	if err = json.Unmarshal([]byte(request.Body), &payload); err != nil {
+	response, err = muxAdapter.Proxy(request)
+
+	if err != nil {
 		response = utils.BuildErrorResponse(response, err.Error())
 
 		return response, nil
 	}
 
-	if result, gqlErr = g.ExecuteQuery(payload); gqlErr.Message != "" {
-		response = utils.BuildErrorResponse(response, gqlErr.Message)
-
-		return response, nil
-	}
-
-	responseBody, _ = json.Marshal(map[string]interface{}{
-		"data": result.Data,
-	})
-
-	buf = bytes.NewBuffer(responseBody)
-
-	response.StatusCode = http.StatusOK
-	response.Body = buf.String()
-
-	return response, nil
+	return response, err
 }

@@ -1,0 +1,3 @@
+type Query {
+  userLogin(params: AuthParams!): User!
+}
