@@ -36,7 +36,7 @@ module "vpc" {
   tags = {
     Application = var.all_tags["Application"]
     Project     = var.all_tags["Project"]
-    Env         = var.all_tags["Env"]
+    Env         = var.env
   }
 }
 

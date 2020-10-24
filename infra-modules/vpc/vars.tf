@@ -1,3 +1,7 @@
+variable "env" {
+  description = "Environment name"
+}
+
 variable "name" {
   description = "The name prefix"
   default     = "user-auth"
