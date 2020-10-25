@@ -14,6 +14,7 @@ type AuthService interface {
 type authService struct{}
 
 var errInvalidPassword = errors.New("invalid password")
+var errUserDoesNotExist = errors.New("user does not exist")
 
 var mockUserDB = map[string]string{
 	"ahummel25": "Welcome123",
@@ -26,6 +27,10 @@ func NewAuthService() *authService {
 
 // AuthenticateUser resolves the user.
 func (a *authService) AuthenticateUser(username string, password string) (*model.User, error) {
+	if mockUserDB[username] == "" {
+		return nil, errUserDoesNotExist
+	}
+
 	dbUserPassword := mockUserDB[username]
 
 	if dbUserPassword != password {

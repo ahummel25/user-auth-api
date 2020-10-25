@@ -10,11 +10,11 @@ import (
 	"github.com/src/user-auth-api/graph/model"
 )
 
-func (r *queryResolver) UserLogin(ctx context.Context, params model.AuthParams) (*model.User, error) {
-	return r.AuthService.AuthenticateUser(params.Username, params.Password)
-}
+type queryResolver struct{ *Resolver }
 
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
-type queryResolver struct{ *Resolver }
+func (r *queryResolver) UserLogin(ctx context.Context, params model.AuthParams) (*model.User, error) {
+	return r.AuthService.AuthenticateUser(params.Username, params.Password)
+}
