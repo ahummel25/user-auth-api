@@ -63,6 +63,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 		)
 
 		testAuthService.AssertExpectations(t)
+		testAuthService.AssertNumberOfCalls(t, "AuthenticateUser", 1)
 		testAuthService.AssertCalled(t, "AuthenticateUser", mockUsername, mockPassword)
 
 		// require.Equal(t, mockID, mockResponse.Data.ID)
@@ -89,6 +90,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 		)
 
 		testAuthService.AssertExpectations(t)
+		testAuthService.AssertNumberOfCalls(t, "AuthenticateUser", 1)
 		testAuthService.AssertCalled(t, "AuthenticateUser", mockUsername, mockPassword)
 
 		require.EqualError(t, err, `[{"message":"invalid password","path":["userLogin"]}]`)

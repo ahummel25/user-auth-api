@@ -20,12 +20,12 @@ var mockUserDB = map[string]string{
 	"ahummel25": "Welcome123",
 }
 
-// NewAuthService returns a pointer to a new UserService.
+// NewAuthService returns a pointer to a new auth service.
 func NewAuthService() *authService {
 	return &authService{}
 }
 
-// AuthenticateUser resolves the user.
+// AuthenticateUser authenticates the user.
 func (a *authService) AuthenticateUser(username string, password string) (*model.User, error) {
 	if mockUserDB[username] == "" {
 		return nil, errUserDoesNotExist
