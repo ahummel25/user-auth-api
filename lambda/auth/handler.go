@@ -30,7 +30,7 @@ func init() {
 	schema := generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})
 	server := handler.NewDefaultServer(schema)
 
-	r.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+	r.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))
 	r.Handle("/graphql", server)
 
 	muxAdapter = gorillamux.New(r)
