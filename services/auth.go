@@ -41,8 +41,8 @@ func (a *authService) AuthenticateUser(username string, password string) (*model
 	name := "Andrew"
 
 	user := &model.User{
-		ID:   id,
-		Name: name,
+		UserID: id,
+		Name:   name,
 	}
 
 	return user, nil

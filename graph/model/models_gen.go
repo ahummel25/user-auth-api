@@ -8,6 +8,6 @@ type AuthParams struct {
 }
 
 type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	UserID string `json:"userID"`
+	Name   string `json:"name"`
 }

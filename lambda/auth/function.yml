@@ -3,5 +3,7 @@ package:
   artifact: ./build/packages/auth.zip
 events:
   - http: ANY {proxy+}
-  - http: ANY /
+  - http:
+      method: POST
+      path: graphql
 vpc: ${self:custom.vpc}

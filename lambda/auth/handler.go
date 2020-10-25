@@ -51,9 +51,7 @@ func LambdaHandler(
 		}
 	)
 
-	response, err = muxAdapter.Proxy(request)
-
-	if err != nil {
+	if response, err = muxAdapter.Proxy(request); err != nil {
 		response = utils.BuildErrorResponse(response, err.Error())
 
 		return response, nil
