@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/src/user-auth-api/graph/generated"
-	"github.com/src/user-auth-api/graph/resolver"
+	"github.com/src/user-auth-api/graph/resolvers"
 	"github.com/src/user-auth-api/services"
 	"github.com/src/user-auth-api/utils"
 )
@@ -22,12 +22,12 @@ func init() {
 
 	authService := services.NewAuthService()
 
-	resolvers := resolver.Resolver{
+	initResolvers := resolvers.Resolvers{
 		AuthService: authService,
 	}
 
 	// From server.go
-	schema := generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})
+	schema := generated.NewExecutableSchema(generated.Config{Resolvers: &initResolvers})
 	server := handler.NewDefaultServer(schema)
 
 	r.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))

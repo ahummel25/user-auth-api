@@ -1,4 +1,4 @@
-package resolver
+package resolvers
 
 import "github.com/src/user-auth-api/services"
 
@@ -6,6 +6,6 @@ import "github.com/src/user-auth-api/services"
 //
 // It serves as dependency injection for your app, add any dependencies you require here.
 
-type Resolver struct {
+type Resolvers struct {
 	AuthService services.AuthService
 }

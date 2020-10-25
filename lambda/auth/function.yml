@@ -2,7 +2,9 @@ handler: my.bootstrap.file
 package:
   artifact: ./build/packages/auth.zip
 events:
-  - http: ANY {proxy+}
+  - http:
+      method: GET
+      path: graphiql
   - http:
       method: POST
       path: graphql

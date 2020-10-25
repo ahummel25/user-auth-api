@@ -8,7 +8,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/src/user-auth-api/graph/generated"
-	"github.com/src/user-auth-api/graph/resolver"
+	"github.com/src/user-auth-api/graph/resolvers"
 	"github.com/src/user-auth-api/services"
 )
 
@@ -22,7 +22,7 @@ func main() {
 
 	authService := services.NewAuthService()
 
-	resolvers := resolver.Resolver{
+	resolvers := resolvers.Resolvers{
 		AuthService: authService,
 	}
 

@@ -1,4 +1,4 @@
-package resolver_test
+package resolvers_test
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/src/user-auth-api/graph/generated"
 	"github.com/src/user-auth-api/graph/model"
-	"github.com/src/user-auth-api/graph/resolver"
+	"github.com/src/user-auth-api/graph/resolvers"
 	"github.com/src/user-auth-api/mocks"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -45,7 +45,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 
 	t.Run("should authenticate user correctly", func(t *testing.T) {
 		setup()
-		resolvers := resolver.Resolver{AuthService: testAuthService}
+		resolvers := resolvers.Resolvers{AuthService: testAuthService}
 
 		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})))
 		u := model.User{UserID: mockID, Name: mockName}
@@ -72,7 +72,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 	t.Run("should respond with an error when an invalid password is provided", func(t *testing.T) {
 		setup()
 		testAuthService.ErrorInvalidPassword = true
-		resolvers := resolver.Resolver{AuthService: testAuthService}
+		resolvers := resolvers.Resolvers{AuthService: testAuthService}
 
 		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})))
 
