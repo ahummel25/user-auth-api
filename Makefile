@@ -5,14 +5,13 @@ COMMON_LDFLAGS        = -s -w
 
 build: lambda/*
 	for func in lambda/*; do \
-		echo $$(basename $${func}) ; \
 		mkdir -p build/packages/$$(basename $${func}) ; \
 		$(BUILD_PREFIX) -ldflags="$(COMMON_LDFLAGS)" -o build/packages/$$(basename $${func})/bootstrap lambda/$$(basename $${func})/*.go ; \
 		zip -j build/packages/$$(basename $${func}).zip build/packages/$$(basename $${func})/bootstrap ; \
 	done
 
 clean:
-	rm -rf ./bin ./vendor Gopkg.lock
+	rm -rf ./build ./vendor Gopkg.lock
 
 deploy: clean build
 	sls deploy --verbose

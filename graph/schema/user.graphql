@@ -3,6 +3,6 @@
 # https://gqlgen.com/getting-started/
 
 type User {
-  userID: String!
+  userID: ID!
   name: String!
 }

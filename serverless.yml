@@ -3,14 +3,10 @@ service:
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
-frameworkVersion: '>=2.0.0'
-
-plugins:
-  - serverless-pseudo-parameters
+frameworkVersion: '>=2.8.0'
 
 custom:
-  awsAccountId: ${file(./getAccountId.js):getAccountId}
-  commonPrefix: ${self:service.name}-${self:provider.stage}-app
+  commonPrefix: ${self:service.name}-${self:provider.stage}-api
   vpc: ${file(./${self:provider.stage}.yml):vpc}
 
 provider:
@@ -20,7 +16,7 @@ provider:
     restApi:
       accessLogging: true
       executionLogging: true
-      role: 'arn:aws:iam::${self:custom.awsAccountId}:role/${self:custom.commonPrefix}-apiGatewayRole'
+      role: 'arn:aws:iam::#{AWS::AccountId}:role/${self:custom.commonPrefix}GatewayRole'
       roleManagedExternally: true
   iamRoleStatements:
     - Effect: 'Allow'

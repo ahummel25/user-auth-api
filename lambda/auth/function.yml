@@ -8,4 +8,4 @@ events:
   - http:
       method: POST
       path: graphql
-vpc: ${self:custom.vpc}
+#vpc: ${self:custom.vpc}
