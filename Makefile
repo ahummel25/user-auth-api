@@ -1,12 +1,12 @@
-BUILD_PREFIX          = env GOOS=linux go build
-COMMON_LDFLAGS        = -s -w
+BUILD_PREFIX          = env CC=x86_64-linux-musl-gcc CXX=x86_64-linux-musl-g++ GOARCH=amd64 GOOS=linux CGO_ENABLED=1 go build
+COMMON_LDFLAGS        = "-linkmode external -extldflags -static -s -w"
 
 .PHONY: build clean deploy gomodgen
 
 build: lambda/*
 	for func in lambda/*; do \
 		mkdir -p build/packages/$$(basename $${func}) ; \
-		$(BUILD_PREFIX) -ldflags="$(COMMON_LDFLAGS)" -o build/packages/$$(basename $${func})/bootstrap lambda/$$(basename $${func})/*.go ; \
+		$(BUILD_PREFIX) -ldflags=$(COMMON_LDFLAGS) -o build/packages/$$(basename $${func})/bootstrap lambda/$$(basename $${func})/*.go ; \
 		zip -j build/packages/$$(basename $${func}).zip build/packages/$$(basename $${func})/bootstrap ; \
 	done
 

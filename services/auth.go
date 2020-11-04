@@ -1,8 +1,11 @@
 package services
 
 import (
+	"database/sql"
 	"errors"
+	"log"
 
+	dbHelper "github.com/src/user-auth-api/db"
 	"github.com/src/user-auth-api/graph/model"
 )
 
@@ -13,8 +16,10 @@ type AuthService interface {
 
 type authService struct{}
 
-var errInvalidPassword = errors.New("invalid password")
-var errUserDoesNotExist = errors.New("user does not exist")
+var (
+	errInvalidPassword  = errors.New("invalid password")
+	errUserDoesNotExist = errors.New("user does not exist")
+)
 
 var mockUserDB = map[string]string{
 	"ahummel25": "Welcome123",
@@ -27,6 +32,18 @@ func NewAuthService() *authService {
 
 // AuthenticateUser authenticates the user.
 func (a *authService) AuthenticateUser(username string, password string) (*model.User, error) {
+	var (
+		db  *sql.DB
+		err error
+	)
+	if db, err = dbHelper.ConnectToDB(); err != nil {
+		return nil, err
+	}
+
+	log.Printf("%v\n", db)
+
+	defer db.Close()
+
 	if mockUserDB[username] == "" {
 		return nil, errUserDoesNotExist
 	}

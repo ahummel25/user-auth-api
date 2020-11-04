@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 )
@@ -25,4 +26,12 @@ func BuildErrorResponse(response events.APIGatewayProxyResponse, errorMsg string
 	response.StatusCode = statusCode
 
 	return response
+}
+
+// FileExists will verify if the file exists in the specified path.
+func FileExists(path string) bool {
+	if _, err := os.Stat(path); err != nil {
+		return false
+	}
+	return true
 }
