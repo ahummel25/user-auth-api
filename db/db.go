@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"context"
@@ -9,10 +9,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const dbFile string = "file://mnt/storage/db/user_auth.db?cache=shared&_auth&_auth_user=admin&_auth_pass=admin&_auth_crypt=sha1"
+// DBService contains signatures for any DB functions.
+type DBService interface {
+	GetDBConnection() (*mongo.Client, context.Context)
+}
+
+type dbService struct{}
 
 // GetDBConnection will return a mongo client connection.
-func GetDBConnection() *mongo.Client {
+func GetDBConnection() (*mongo.Client, context.Context, context.CancelFunc) {
 	var (
 		client   *mongo.Client
 		err      error
@@ -21,51 +26,9 @@ func GetDBConnection() *mongo.Client {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
-	defer cancel()
-
 	if client, err = mongo.Connect(ctx, options.Client().ApplyURI(mongoURI)); err != nil {
 		log.Fatal(err)
 	}
 
-	return client
-
-	/*defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			log.Fatal(err)
-		}
-	}()
-
-	db := client.Database("default")
-	usersCollection := db.Collection("users")
-
-	result, err := usersCollection.InsertOne(ctx, bson.D{
-		{Key: "user_id", Value: uuid.New().String()},
-		{Key: "email", Value: "ahummel25@gmail.com"},
-		{Key: "username", Value: "ahummel25"},
-	})
-
-	fmt.Println(result)
-
-	filter := bson.M{"username": "ahummel25"}
-	var result bson.M
-	err = usersCollection.FindOne(ctx, filter).Decode(&result)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(result["username"])
-
-	defer cur.Close(ctx)
-
-	for cur.Next(ctx) {
-
-		err := cur.Decode(&result)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(result["user_id"])
-		fmt.Println(result["username"])
-	}
-	if err := cur.Err(); err != nil {
-		log.Fatal(err)
-	}*/
+	return client, ctx, cancel
 }

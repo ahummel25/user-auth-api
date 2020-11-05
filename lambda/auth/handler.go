@@ -20,10 +20,10 @@ var muxAdapter *gorillamux.GorillaMuxAdapter
 func init() {
 	r := mux.NewRouter()
 
-	authService := services.NewAuthService()
+	userService := services.NewUserService()
 
 	initResolvers := resolvers.Resolvers{
-		AuthService: authService,
+		UserService: userService,
 	}
 
 	// From server.go

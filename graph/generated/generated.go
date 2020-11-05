@@ -215,7 +215,7 @@ var sources = []*ast.Source{
 }
 
 type Mutation {
-	createUser(user: CreateUserInput!): User!
+  createUser(user: CreateUserInput!): User!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/user.graphql", Input: `# GraphQL schema example
@@ -235,6 +235,7 @@ input CreateUserInput {
   firstName: String!
   lastName: String!
   userName: String!
+  password: String!
 }
 `, BuiltIn: false},
 }
@@ -1807,6 +1808,14 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userName"))
 			it.UserName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "password":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
+			it.Password, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}

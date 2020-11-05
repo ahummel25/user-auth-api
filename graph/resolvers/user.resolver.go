@@ -5,7 +5,6 @@ package resolvers
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/src/user-auth-api/graph/generated"
 	"github.com/src/user-auth-api/graph/model"
@@ -20,10 +19,10 @@ func (r *Resolvers) Mutation() generated.MutationResolver { return &mutationReso
 // Query returns generated.QueryResolver implementation.
 func (r *Resolvers) Query() generated.QueryResolver { return &queryResolver{r} }
 
-func (r *mutationResolver) CreateUser(ctx context.Context, user model.CreateUserInput) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) CreateUser(ctx context.Context, params model.CreateUserInput) (*model.User, error) {
+	return r.UserService.CreateUser(params)
 }
 
 func (r *queryResolver) UserLogin(ctx context.Context, params model.AuthParams) (*model.User, error) {
-	return r.AuthService.AuthenticateUser(params.Email, params.Password)
+	return r.UserService.AuthenticateUser(params.Email, params.Password)
 }

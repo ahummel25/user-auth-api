@@ -20,10 +20,10 @@ func main() {
 		port = defaultPort
 	}
 
-	authService := services.NewAuthService()
+	userService := services.NewUserService()
 
 	resolvers := resolvers.Resolvers{
-		AuthService: authService,
+		UserService: userService,
 	}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers}))
@@ -31,6 +31,6 @@ func main() {
 	http.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))
 	http.Handle("/graphql", srv)
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
+	log.Printf("connect to http://localhost:%s/graphiql for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

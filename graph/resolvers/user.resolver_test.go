@@ -26,11 +26,11 @@ var (
 	}
 	mockUsername    = "ahummel25"
 	mockPassword    = "Welcome123"
-	testAuthService *mocks.MockedAuthService
+	testAuthService *mocks.MockedUserService
 )
 
 func setup() {
-	testAuthService = new(mocks.MockedAuthService)
+	testAuthService = new(mocks.MockedUserService)
 }
 
 func TestQueryResolver_AuthenticateUser(t *testing.T) {
@@ -45,7 +45,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 
 	t.Run("should authenticate user correctly", func(t *testing.T) {
 		setup()
-		resolvers := resolvers.Resolvers{AuthService: testAuthService}
+		resolvers := resolvers.Resolvers{UserService: testAuthService}
 
 		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})))
 		u := model.User{UserID: mockID, FirstName: mockFirstName}
@@ -73,7 +73,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 	t.Run("should respond with an error when an invalid password is provided", func(t *testing.T) {
 		setup()
 		testAuthService.ErrorInvalidPassword = true
-		resolvers := resolvers.Resolvers{AuthService: testAuthService}
+		resolvers := resolvers.Resolvers{UserService: testAuthService}
 
 		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})))
 
