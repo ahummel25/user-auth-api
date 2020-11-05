@@ -178,7 +178,7 @@ func TestMutationResolver_CreateUser(t *testing.T) {
 		// require.Equal(t, mockName, mockResponse.Data.Name)
 	})
 
-	t.Run("should create user", func(t *testing.T) {
+	t.Run("should respond with an error when a username is already taken", func(t *testing.T) {
 		setup()
 
 		testAuthService.ErrorUserAlreadyExists = true
