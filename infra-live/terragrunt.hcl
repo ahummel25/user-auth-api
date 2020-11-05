@@ -15,7 +15,7 @@ locals {
   account_id   = local.account_vars.locals.aws_account_id
   aws_region   = local.region_vars.locals.aws_region
   environment  = local.environment_vars.locals.environment
-  common_tags  = local.tag_vars.locals.all_tags
+  common_tags  = local.tag_vars.locals.common_tags
 }
 
 generate "provider" {

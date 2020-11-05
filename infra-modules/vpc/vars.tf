@@ -7,7 +7,7 @@ variable "name" {
   default     = "user-auth"
 }
 
-variable "all_tags" {
+variable "common_tags" {
   type = map(string)
 }
 

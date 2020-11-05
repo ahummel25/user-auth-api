@@ -6,7 +6,7 @@ locals {
 
   # Extract out common variables for reuse
   env      = local.environment_vars.locals.environment
-  all_tags = local.tag_vars.locals.all_tags
+  common_tags = local.tag_vars.locals.common_tags
 }
 
 terraform {
@@ -20,6 +20,6 @@ include {
 
 
 inputs = {
-  all_tags = local.all_tags
+  common_tags = local.common_tags
   env      = local.env
 }

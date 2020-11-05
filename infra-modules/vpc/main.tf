@@ -34,8 +34,8 @@ module "vpc" {
 
   # -- TAGS -- #
   tags = {
-    Application = var.all_tags["Application"]
-    Project     = var.all_tags["Project"]
+    Application = var.common_tags["Application"]
+    Project     = var.common_tags["Project"]
     Env         = var.env
   }
 }
@@ -86,8 +86,8 @@ module "security_group" {
   ]
 
   tags = {
-    Application = var.all_tags["Application"]
-    Project     = var.all_tags["Project"]
-    Env         = var.all_tags["Env"]
+    Application = var.common_tags["Application"]
+    Project     = var.common_tags["Project"]
+    Env         = var.env
   }
 }

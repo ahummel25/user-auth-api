@@ -2,8 +2,11 @@ locals {
   # Automatically load environment-level variables
   environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 
+  tag_vars = read_terragrunt_config(find_in_parent_folders("tags.hcl"))
+
   # Extract out common variables for reuse
-  env = local.environment_vars.locals.environment
+  env         = local.environment_vars.locals.environment
+  common_tags = local.tag_vars.locals.common_tags
 }
 
 terraform {
@@ -17,5 +20,6 @@ include {
 
 
 inputs = {
-  env = local.env
+  common_tags = local.common_tags
+  env         = local.env
 }

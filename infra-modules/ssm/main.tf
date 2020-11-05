@@ -5,8 +5,8 @@ resource "aws_ssm_parameter" "mongodb_uri" {
   value       = var.mongodb_uri
 
   tags = {
-    Application = var.all_tags["Application"]
-    Project     = var.all_tags["Project"]
+    Application = var.common_tags["Application"]
+    Project     = var.common_tags["Project"]
     Env         = var.env
   }
 }

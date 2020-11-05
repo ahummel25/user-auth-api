@@ -3,7 +3,7 @@ variable "mongodb_uri" {
   description = "MongoDB connection string"
 }
 
-variable "all_tags" {
+variable "common_tags" {
   type = map(string)
 }
 

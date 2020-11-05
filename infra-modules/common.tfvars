@@ -1,4 +1,4 @@
-variable "all_tags" {
+variable "common_tags" {
   type        = map(string)
-  description = "All other tags"
+  description = "Common tags"
 }
