@@ -1,17 +1,14 @@
 package services
 
 import (
-	"database/sql"
 	"errors"
-	"log"
 
-	dbHelper "github.com/src/user-auth-api/db"
 	"github.com/src/user-auth-api/graph/model"
 )
 
 // AuthService contains signatures for any auth functions.
 type AuthService interface {
-	AuthenticateUser(username string, password string) (*model.User, error)
+	AuthenticateUser(email string, password string) (*model.User, error)
 }
 
 type authService struct{}
@@ -22,7 +19,7 @@ var (
 )
 
 var mockUserDB = map[string]string{
-	"ahummel25": "Welcome123",
+	"ahummel25@gmail.com": "Welcome123",
 }
 
 // NewAuthService returns a pointer to a new auth service.
@@ -31,35 +28,23 @@ func NewAuthService() *authService {
 }
 
 // AuthenticateUser authenticates the user.
-func (a *authService) AuthenticateUser(username string, password string) (*model.User, error) {
-	var (
-		db  *sql.DB
-		err error
-	)
-	if db, err = dbHelper.ConnectToDB(); err != nil {
-		return nil, err
-	}
-
-	log.Printf("%v\n", db)
-
-	defer db.Close()
-
-	if mockUserDB[username] == "" {
+func (a *authService) AuthenticateUser(email string, password string) (*model.User, error) {
+	if mockUserDB[email] == "" {
 		return nil, errUserDoesNotExist
 	}
 
-	dbUserPassword := mockUserDB[username]
+	dbUserPassword := mockUserDB[email]
 
 	if dbUserPassword != password {
 		return nil, errInvalidPassword
 	}
 
-	id := "1"
-	name := "Andrew"
+	userID := "1"
+	firstName := "Andrew"
 
 	user := &model.User{
-		UserID: id,
-		Name:   name,
+		UserID:    userID,
+		FirstName: firstName,
 	}
 
 	return user, nil

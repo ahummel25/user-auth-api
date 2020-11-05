@@ -1,60 +1,71 @@
-package db
+package main
 
 import (
-	"database/sql"
-	"fmt"
+	"context"
 	"log"
-	"os"
+	"time"
 
-	_ "github.com/mattn/go-sqlite3" //Import sqlite3 for db flavor.
-
-	"github.com/src/user-auth-api/utils"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const dbFile string = "file://mnt/storage/db/user_auth.db?cache=shared&_auth&_auth_user=admin&_auth_pass=admin&_auth_crypt=sha1"
 
-// ConnectToDB will return a database connection
-func ConnectToDB() (*sql.DB, error) {
+// GetDBConnection will return a mongo client connection.
+func GetDBConnection() *mongo.Client {
 	var (
-		db  *sql.DB
-		err error
+		client   *mongo.Client
+		err      error
+		mongoURI = "mongodb+srv://user_auth_admin:rlippi7-yxyeEr@userauthmongoclusterdev.yohvj.mongodb.net/default?retryWrites=true&w=majority"
 	)
 
-	if db, err = sql.Open("sqlite3", dbFile); err != nil {
-		return nil, fmt.Errorf("error opening Sqlite DB: %v", err)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+	defer cancel()
+
+	if client, err = mongo.Connect(ctx, options.Client().ApplyURI(mongoURI)); err != nil {
+		log.Fatal(err)
 	}
 
-	return db, nil
-}
+	return client
 
-// InitDB will initialize the DB and execute any DDL statements.
-func InitDB() error {
-	var (
-		db   *sql.DB
-		err  error
-		file *os.File
-	)
-
-	if !utils.FileExists(dbFile) {
-		log.Println("Creating database file: " + dbFile)
-		if file, err = os.Create(dbFile); err != nil {
-			return fmt.Errorf("error creating DB file %v", err)
+	/*defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			log.Fatal(err)
 		}
-	}
+	}()
 
-	if err = file.Close(); err != nil {
-		return fmt.Errorf("error closing DB file %v", err)
-	}
+	db := client.Database("default")
+	usersCollection := db.Collection("users")
 
-	if db, err = ConnectToDB(); err != nil {
-		return err
-	}
+	result, err := usersCollection.InsertOne(ctx, bson.D{
+		{Key: "user_id", Value: uuid.New().String()},
+		{Key: "email", Value: "ahummel25@gmail.com"},
+		{Key: "username", Value: "ahummel25"},
+	})
 
-	for _, ddlStmt := range ddlStmts {
-		if _, err = db.Exec(ddlStmt); err != nil {
-			return fmt.Errorf("error executing DDL statement%v", err)
+	fmt.Println(result)
+
+	filter := bson.M{"username": "ahummel25"}
+	var result bson.M
+	err = usersCollection.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(result["username"])
+
+	defer cur.Close(ctx)
+
+	for cur.Next(ctx) {
+
+		err := cur.Decode(&result)
+		if err != nil {
+			log.Fatal(err)
 		}
+		fmt.Println(result["user_id"])
+		fmt.Println(result["username"])
 	}
-
-	return nil
+	if err := cur.Err(); err != nil {
+		log.Fatal(err)
+	}*/
 }

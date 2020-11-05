@@ -17,7 +17,7 @@ import (
 var (
 	errInvalidPassword = errors.New("invalid password")
 	mockID             = "1"
-	mockName           = "John Smith"
+	mockFirstName      = "John"
 	mockResponse       struct {
 		Data struct {
 			UserID string
@@ -48,7 +48,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 		resolvers := resolvers.Resolvers{AuthService: testAuthService}
 
 		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})))
-		u := model.User{UserID: mockID, Name: mockName}
+		u := model.User{UserID: mockID, FirstName: mockFirstName}
 
 		testAuthService.On(
 			"AuthenticateUser",

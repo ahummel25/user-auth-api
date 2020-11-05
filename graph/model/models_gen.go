@@ -3,11 +3,21 @@
 package model
 
 type AuthParams struct {
-	Username string `json:"username"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
+type CreateUserInput struct {
+	Email     string `json:"email"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	UserName  string `json:"userName"`
+}
+
 type User struct {
-	UserID string `json:"userID"`
-	Name   string `json:"name"`
+	UserID    string `json:"userID"`
+	Email     string `json:"email"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	UserName  string `json:"userName"`
 }

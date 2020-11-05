@@ -1,3 +1,7 @@
 type Query {
   userLogin(params: AuthParams!): User!
 }
+
+type Mutation {
+  createUser(user: CreateUserInput!): User!
+}
