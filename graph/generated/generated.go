@@ -58,13 +58,17 @@ type ComplexityRoot struct {
 		UserID    func(childComplexity int) int
 		UserName  func(childComplexity int) int
 	}
+
+	UserObject struct {
+		User func(childComplexity int) int
+	}
 }
 
 type MutationResolver interface {
-	CreateUser(ctx context.Context, user model.CreateUserInput) (*model.User, error)
+	CreateUser(ctx context.Context, user model.CreateUserInput) (*model.UserObject, error)
 }
 type QueryResolver interface {
-	UserLogin(ctx context.Context, params model.AuthParams) (*model.User, error)
+	UserLogin(ctx context.Context, params model.AuthParams) (*model.UserObject, error)
 }
 
 type executableSchema struct {
@@ -141,6 +145,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.UserName(childComplexity), true
 
+	case "UserObject.user":
+		if e.complexity.UserObject.User == nil {
+			break
+		}
+
+		return e.complexity.UserObject.User(childComplexity), true
+
 	}
 	return 0, false
 }
@@ -211,11 +222,11 @@ var sources = []*ast.Source{
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/root.graphql", Input: `type Query {
-  userLogin(params: AuthParams!): User!
+  userLogin(params: AuthParams!): UserObject!
 }
 
 type Mutation {
-  createUser(user: CreateUserInput!): User!
+  createUser(user: CreateUserInput!): UserObject!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/user.graphql", Input: `# GraphQL schema example
@@ -228,6 +239,10 @@ type User {
   firstName: String!
   lastName: String!
   userName: String!
+}
+
+type UserObject {
+	user: User!
 }
 
 input CreateUserInput {
@@ -365,9 +380,9 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.User)
+	res := resTmp.(*model.UserObject)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUserObject2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUserObject(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_userLogin(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -407,9 +422,9 @@ func (ec *executionContext) _Query_userLogin(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.User)
+	res := resTmp.(*model.UserObject)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUserObject2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUserObject(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -656,6 +671,41 @@ func (ec *executionContext) _User_userName(ctx context.Context, field graphql.Co
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserObject_user(ctx context.Context, field graphql.CollectedField, obj *model.UserObject) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserObject",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.User, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -1955,6 +2005,33 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
+var userObjectImplementors = []string{"UserObject"}
+
+func (ec *executionContext) _UserObject(ctx context.Context, sel ast.SelectionSet, obj *model.UserObject) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userObjectImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserObject")
+		case "user":
+			out.Values[i] = ec._UserObject_user(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var __DirectiveImplementors = []string{"__Directive"}
 
 func (ec *executionContext) ___Directive(ctx context.Context, sel ast.SelectionSet, obj *introspection.Directive) graphql.Marshaler {
@@ -2255,10 +2332,6 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNUser2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {
-	return ec._User(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -2267,6 +2340,20 @@ func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑa
 		return graphql.Null
 	}
 	return ec._User(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNUserObject2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUserObject(ctx context.Context, sel ast.SelectionSet, v model.UserObject) graphql.Marshaler {
+	return ec._UserObject(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUserObject2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUserObject(ctx context.Context, sel ast.SelectionSet, v *model.UserObject) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._UserObject(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

@@ -17,8 +17,8 @@ import (
 
 // UserService contains signatures for any auth functions.
 type UserService interface {
-	AuthenticateUser(email string, password string) (*model.User, error)
-	CreateUser(params model.CreateUserInput) (*model.User, error)
+	AuthenticateUser(email string, password string) (*model.UserObject, error)
+	CreateUser(params model.CreateUserInput) (*model.UserObject, error)
 }
 
 type userService struct{}
@@ -30,8 +30,12 @@ var (
 )
 
 type userDB struct {
-	model.User
-	Password string
+	UserID    string `bson:"user_id"`
+	Email     string `bson:"email"`
+	FirstName string `bson:"first_name"`
+	LastName  string `bson:"last_name"`
+	UserName  string `bson:"user_name"`
+	Password  string `bson:"password"`
 }
 
 // NewUserService returns a pointer to a new auth service.
@@ -50,15 +54,15 @@ func (u *userService) getUsersCollection() (context.Context, func(), *mongo.Coll
 		cancel()
 	}
 
-	db := conn.Database("default")
+	db := conn.Database("auth")
 	return ctx, cancelFunc, db.Collection("users")
 }
 
 // AuthenticateUser authenticates the user.
-func (u *userService) AuthenticateUser(email string, password string) (*model.User, error) {
+func (u *userService) AuthenticateUser(email string, password string) (*model.UserObject, error) {
 	var (
 		err    error
-		userDB bson.M
+		userDB userDB
 	)
 
 	ctx, cancelFunc, usersCollection := u.getUsersCollection()
@@ -77,7 +81,9 @@ func (u *userService) AuthenticateUser(email string, password string) (*model.Us
 		return nil, err
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(userDB["password"].(string)), []byte(password)); err != nil {
+	log.Printf("%+v\n", userDB)
+
+	if err = bcrypt.CompareHashAndPassword([]byte(userDB.Password), []byte(password)); err != nil {
 		log.Printf("Error comparing user password on user login: %v\n", err)
 
 		if strings.Contains(err.Error(), "not the hash of the given password") {
@@ -88,18 +94,20 @@ func (u *userService) AuthenticateUser(email string, password string) (*model.Us
 	}
 
 	loggedInUser := &model.User{
-		UserID:    userDB["user_id"].(string),
-		Email:     userDB["email"].(string),
-		FirstName: userDB["first_name"].(string),
-		LastName:  userDB["last_name"].(string),
-		UserName:  userDB["user_name"].(string),
+		UserID:    userDB.UserID,
+		Email:     userDB.Email,
+		FirstName: userDB.FirstName,
+		LastName:  userDB.LastName,
+		UserName:  userDB.UserName,
 	}
 
-	return loggedInUser, nil
+	user := &model.UserObject{User: loggedInUser}
+
+	return user, nil
 }
 
 // CreateUser authenticates the user.
-func (u *userService) CreateUser(params model.CreateUserInput) (*model.User, error) {
+func (u *userService) CreateUser(params model.CreateUserInput) (*model.UserObject, error) {
 	var (
 		err       error
 		hash      []byte
@@ -152,13 +160,15 @@ func (u *userService) CreateUser(params model.CreateUserInput) (*model.User, err
 		return nil, err
 	}
 
-	user := &model.User{
+	newUser := &model.User{
 		UserID:    newUserID,
 		Email:     params.Email,
 		FirstName: params.FirstName,
 		LastName:  params.LastName,
 		UserName:  params.UserName,
 	}
+
+	user := &model.UserObject{User: newUser}
 
 	return user, nil
 }

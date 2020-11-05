@@ -1,7 +1,7 @@
 type Query {
-  userLogin(params: AuthParams!): User!
+  userLogin(params: AuthParams!): UserObject!
 }
 
 type Mutation {
-  createUser(user: CreateUserInput!): User!
+  createUser(user: CreateUserInput!): UserObject!
 }

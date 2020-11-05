@@ -9,8 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// DBService contains signatures for any DB functions.
-type DBService interface {
+// IDBService contains signatures for any DB functions.
+type IDBService interface {
 	GetDBConnection() (*mongo.Client, context.Context)
 }
 

@@ -22,3 +22,7 @@ type User struct {
 	LastName  string `json:"lastName"`
 	UserName  string `json:"userName"`
 }
+
+type UserObject struct {
+	User *User `json:"user"`
+}

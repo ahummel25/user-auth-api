@@ -1,5 +1,5 @@
 variable "env" {
-  description = "Environment name"
+  type = string
 }
 
 variable "name" {
@@ -8,13 +8,7 @@ variable "name" {
 }
 
 variable "all_tags" {
-  type        = map(string)
-  description = "All other tags"
-  default = {
-    Application = "User Auth"
-    Project     = "User Auth"
-    Env         = "dev"
-  }
+  type = map(string)
 }
 
 variable "azs" {

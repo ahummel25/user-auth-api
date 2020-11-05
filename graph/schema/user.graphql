@@ -10,6 +10,10 @@ type User {
   userName: String!
 }
 
+type UserObject {
+	user: User!
+}
+
 input CreateUserInput {
   email: String!
   firstName: String!
