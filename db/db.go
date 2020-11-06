@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,7 +22,7 @@ func GetDBConnection() (*mongo.Client, context.Context, context.CancelFunc) {
 	var (
 		client   *mongo.Client
 		err      error
-		mongoURI = "mongodb+srv://user_auth_admin:rlippi7-yxyeEr@userauthmongoclusterdev.yohvj.mongodb.net/default?retryWrites=true&w=majority"
+		mongoURI = os.Getenv("MONGODB_URI")
 	)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

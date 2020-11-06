@@ -1,6 +1,8 @@
 handler: my.bootstrap.file
 package:
   artifact: ./build/packages/auth.zip
+environment:
+   MONGODB_URI: ${ssm:/user-auth-api/${self:provider.stage}/MONGODB_URI~true}
 events:
   - http:
       method: GET
