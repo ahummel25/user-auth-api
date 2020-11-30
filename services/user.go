@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 
 	dbHelper "github.com/src/user-auth-api/db"
@@ -21,7 +22,7 @@ type UserService interface {
 	CreateUser(params model.CreateUserInput) (*model.UserObject, error)
 }
 
-type userService struct{}
+type User struct{}
 
 var (
 	errInvalidPassword       = errors.New("invalid password")
@@ -39,11 +40,11 @@ type userDB struct {
 }
 
 // NewUserService returns a pointer to a new auth service.
-func NewUserService() *userService {
-	return &userService{}
+func NewUserService() *User {
+	return &User{}
 }
 
-func (u *userService) getUsersCollection() (context.Context, func(), *mongo.Collection) {
+func (u *User) getUsersCollection() (context.Context, func(), *mongo.Collection, error) {
 	var err error
 	conn, ctx, cancel := dbHelper.GetDBConnection()
 
@@ -55,19 +56,39 @@ func (u *userService) getUsersCollection() (context.Context, func(), *mongo.Coll
 	}
 
 	db := conn.Database("auth")
-	return ctx, cancelFunc, db.Collection("users")
+	usersCollection := db.Collection("users")
+
+	if _, err = usersCollection.Indexes().CreateOne(
+		ctx,
+		mongo.IndexModel{
+			Keys: bson.M{
+				"user_name": 1,
+			},
+			Options: options.Index().SetUnique(true),
+		},
+	); err != nil {
+		log.Printf("Error creating index on users collection: %v\n", err)
+
+		return nil, nil, nil, errors.New("error connecting to DB")
+	}
+
+	return ctx, cancelFunc, usersCollection, nil
 }
 
 // AuthenticateUser authenticates the user.
-func (u *userService) AuthenticateUser(email string, password string) (*model.UserObject, error) {
+func (u *User) AuthenticateUser(email string, password string) (*model.UserObject, error) {
 	var (
 		err    error
 		userDB userDB
 	)
 
-	ctx, cancelFunc, usersCollection := u.getUsersCollection()
+	ctx, cancelFunc, usersCollection, err := u.getUsersCollection()
 
 	defer cancelFunc()
+
+	if err != nil {
+		return nil, err
+	}
 
 	filter := bson.M{"email": email}
 
@@ -80,8 +101,6 @@ func (u *userService) AuthenticateUser(email string, password string) (*model.Us
 
 		return nil, err
 	}
-
-	log.Printf("%+v\n", userDB)
 
 	if err = bcrypt.CompareHashAndPassword([]byte(userDB.Password), []byte(password)); err != nil {
 		log.Printf("Error comparing user password on user login: %v\n", err)
@@ -107,16 +126,20 @@ func (u *userService) AuthenticateUser(email string, password string) (*model.Us
 }
 
 // CreateUser authenticates the user.
-func (u *userService) CreateUser(params model.CreateUserInput) (*model.UserObject, error) {
+func (u *User) CreateUser(params model.CreateUserInput) (*model.UserObject, error) {
 	var (
 		err       error
 		hash      []byte
 		userCount int64
 	)
 
-	ctx, cancelFunc, usersCollection := u.getUsersCollection()
+	ctx, cancelFunc, usersCollection, err := u.getUsersCollection()
 
 	defer cancelFunc()
+
+	if err != nil {
+		return nil, err
+	}
 
 	filter := bson.M{"user_name": params.UserName}
 
@@ -135,7 +158,7 @@ func (u *userService) CreateUser(params model.CreateUserInput) (*model.UserObjec
 
 	newUserID := uuid.New().String()
 
-	userInput := bson.D{
+	newUserInput := bson.D{
 		{
 			Key: "user_id", Value: newUserID,
 		},
@@ -156,7 +179,7 @@ func (u *userService) CreateUser(params model.CreateUserInput) (*model.UserObjec
 		},
 	}
 
-	if _, err = usersCollection.InsertOne(ctx, userInput); err != nil {
+	if _, err = usersCollection.InsertOne(ctx, newUserInput); err != nil {
 		return nil, err
 	}
 
