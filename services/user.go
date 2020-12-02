@@ -45,12 +45,22 @@ func NewUserService() *User {
 }
 
 func (u *User) getUsersCollection() (context.Context, func(), *mongo.Collection, error) {
-	var err error
-	conn, ctx, cancel := dbHelper.GetDBConnection()
+	var (
+		cancel context.CancelFunc
+		conn   *mongo.Client
+		ctx    context.Context
+		err    error
+	)
+
+	if conn, ctx, cancel, err = dbHelper.GetDBConnection(); err != nil {
+		log.Printf("Error connecting to MongoDB: %v\n", err)
+
+		return nil, nil, nil, errors.New("error connecting to DB")
+	}
 
 	cancelFunc := func() {
 		if err = conn.Disconnect(ctx); err != nil {
-			log.Fatal(err)
+			log.Printf("Error disconnecting from MongoDB: %v\n", err)
 		}
 		cancel()
 	}
@@ -125,7 +135,7 @@ func (u *User) AuthenticateUser(email string, password string) (*model.UserObjec
 	return user, nil
 }
 
-// CreateUser authenticates the user.
+// CreateUser creates a new user.
 func (u *User) CreateUser(params model.CreateUserInput) (*model.UserObject, error) {
 	var (
 		err       error

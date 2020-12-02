@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"log"
 	"os"
 	"time"
 
@@ -18,7 +17,7 @@ type IDBService interface {
 type dbService struct{}
 
 // GetDBConnection will return a mongo client connection.
-func GetDBConnection() (*mongo.Client, context.Context, context.CancelFunc) {
+func GetDBConnection() (*mongo.Client, context.Context, context.CancelFunc, error) {
 	var (
 		client   *mongo.Client
 		err      error
@@ -28,8 +27,8 @@ func GetDBConnection() (*mongo.Client, context.Context, context.CancelFunc) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
 	if client, err = mongo.Connect(ctx, options.Client().ApplyURI(mongoURI)); err != nil {
-		log.Fatal(err)
+		return nil, ctx, cancel, err
 	}
 
-	return client, ctx, cancel
+	return client, ctx, cancel, nil
 }

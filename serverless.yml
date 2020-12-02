@@ -12,6 +12,9 @@ custom:
 provider:
   name: aws
   runtime: provided.al2
+  tracing:
+    apiGateway: true
+    lambda: true
   logs:
     restApi:
       accessLogging: true
@@ -21,9 +24,11 @@ provider:
   iamRoleStatements:
     - Effect: 'Allow'
       Action:
-        - 'lambda:AddPermission'
-        - 'lambda:InvokeFunction'
-        - 'lambda:RemovePermission'
+        - lambda:AddPermission
+        - lambda:InvokeFunction
+        - lambda:RemovePermission
+        - xray:PutTraceSegments
+        - xray:PutTelemetryRecords
       Resource:
         - Fn::Join:
             - ':'
