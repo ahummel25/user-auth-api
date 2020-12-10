@@ -26,5 +26,6 @@ include {
 inputs = {
   common_tags = local.common_tags
   env         = local.env
+  mongodb_uri = get_env("MONGODB_URI")
   param_names = local.param_names
 }
