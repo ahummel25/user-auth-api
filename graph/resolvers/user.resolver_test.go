@@ -2,7 +2,6 @@ package resolvers_test
 
 import (
 	"errors"
-	"log"
 	"testing"
 
 	"github.com/99designs/gqlgen/client"
@@ -16,17 +15,31 @@ import (
 )
 
 var (
-	errInvalidPassword = errors.New("invalid password")
-	mockID             = "1"
-	mockFirstName      = "John"
-	mockLastName       = "Smith"
-	mockResponse       struct {
-		User struct {
-			UserID    string
-			FirstName string
-			LastName  string
-			Email     string
-			UserName  string
+	errInvalidPassword    = errors.New("invalid password")
+	mockUserID            = "1"
+	mockFirstName         = "John"
+	mockLastName          = "Smith"
+	mockUserLoginResponse struct {
+		AuthenticateUser struct {
+			User struct {
+				UserID    string
+				FirstName string
+				LastName  string
+				Email     string
+				UserName  string
+			}
+		}
+	}
+
+	mockCreateUserResponse struct {
+		CreateUser struct {
+			User struct {
+				UserID    string
+				FirstName string
+				LastName  string
+				Email     string
+				UserName  string
+			}
 		}
 	}
 	mockEmail       = "mock_email@gmail.com"
@@ -42,7 +55,7 @@ func setup() {
 func TestQueryResolver_AuthenticateUser(t *testing.T) {
 	q := `
 	query DoLogin ($email: String!, $password: String!) { 
-	  userLogin (params: {email: $email, password: $password}) {
+	  authenticateUser(params: {email: $email, password: $password}) {
 		user {
 		  firstName
 		  lastName
@@ -61,7 +74,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 
 		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})))
 		u := model.User{
-			UserID:    mockID,
+			UserID:    mockUserID,
 			FirstName: mockFirstName,
 			LastName:  mockLastName,
 			Email:     mockEmail,
@@ -76,8 +89,8 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 			mock.AnythingOfType("string"),
 		).Return(&uu, nil)
 
-		_ = c.Post(
-			q, &mockResponse,
+		c.MustPost(
+			q, &mockUserLoginResponse,
 			client.Var("email", mockEmail),
 			client.Var("password", mockPassword),
 		)
@@ -86,8 +99,11 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 		testAuthService.AssertNumberOfCalls(t, "AuthenticateUser", 1)
 		testAuthService.AssertCalled(t, "AuthenticateUser", mockEmail, mockPassword)
 
-		// require.Equal(t, mockID, mockResponse.Data.ID)
-		// require.Equal(t, mockName, mockResponse.Data.Name)
+		require.Equal(t, mockUserID, mockUserLoginResponse.AuthenticateUser.User.UserID)
+		require.Equal(t, mockFirstName, mockUserLoginResponse.AuthenticateUser.User.FirstName)
+		require.Equal(t, mockLastName, mockUserLoginResponse.AuthenticateUser.User.LastName)
+		require.Equal(t, mockEmail, mockUserLoginResponse.AuthenticateUser.User.Email)
+		require.Equal(t, mockUserName, mockUserLoginResponse.AuthenticateUser.User.UserName)
 	})
 
 	t.Run("should respond with an error when an invalid password is provided", func(t *testing.T) {
@@ -105,7 +121,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 		).Return(errInvalidPassword, nil)
 
 		err := c.Post(
-			q, &mockResponse,
+			q, &mockUserLoginResponse,
 			client.Var("email", mockEmail),
 			client.Var("password", mockPassword),
 		)
@@ -114,7 +130,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 		testAuthService.AssertNumberOfCalls(t, "AuthenticateUser", 1)
 		testAuthService.AssertCalled(t, "AuthenticateUser", mockEmail, mockPassword)
 
-		require.EqualError(t, err, `[{"message":"invalid password","path":["userLogin"]}]`)
+		require.EqualError(t, err, `[{"message":"invalid password","path":["authenticateUser"]}]`)
 	})
 }
 
@@ -148,7 +164,7 @@ func TestMutationResolver_CreateUser(t *testing.T) {
 
 		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})))
 		u := model.User{
-			UserID:    mockID,
+			UserID:    mockUserID,
 			FirstName: mockFirstName,
 			LastName:  mockLastName,
 			Email:     mockEmail,
@@ -162,8 +178,8 @@ func TestMutationResolver_CreateUser(t *testing.T) {
 			mock.AnythingOfType("CreateUserInput"),
 		).Return(&uu, nil)
 
-		_ = c.Post(
-			q, &mockResponse,
+		c.MustPost(
+			q, &mockCreateUserResponse,
 			client.Var("createUserInput", createUserInput),
 		)
 
@@ -171,11 +187,11 @@ func TestMutationResolver_CreateUser(t *testing.T) {
 		testAuthService.AssertNumberOfCalls(t, "CreateUser", 1)
 		testAuthService.AssertCalled(t, "CreateUser", createUserInput)
 
-		log.Printf("Hwereeee\n")
-		log.Printf("%+v\n", mockResponse)
-
-		// require.Equal(t, mockID, mockResponse.Data.ID)
-		// require.Equal(t, mockName, mockResponse.Data.Name)
+		require.Equal(t, mockUserID, mockCreateUserResponse.CreateUser.User.UserID)
+		require.Equal(t, mockFirstName, mockCreateUserResponse.CreateUser.User.FirstName)
+		require.Equal(t, mockLastName, mockCreateUserResponse.CreateUser.User.LastName)
+		require.Equal(t, mockEmail, mockCreateUserResponse.CreateUser.User.Email)
+		require.Equal(t, mockUserName, mockCreateUserResponse.CreateUser.User.UserName)
 	})
 
 	t.Run("should respond with an error when a username is already taken", func(t *testing.T) {
@@ -186,7 +202,7 @@ func TestMutationResolver_CreateUser(t *testing.T) {
 
 		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})))
 		u := model.User{
-			UserID:    mockID,
+			UserID:    mockUserID,
 			FirstName: mockFirstName,
 			LastName:  mockLastName,
 			Email:     mockEmail,
@@ -201,7 +217,7 @@ func TestMutationResolver_CreateUser(t *testing.T) {
 		).Return(&uu, nil)
 
 		err := c.Post(
-			q, &mockResponse,
+			q, &mockCreateUserResponse,
 			client.Var("createUserInput", createUserInput),
 		)
 

@@ -1,5 +1,5 @@
 type Query {
-  userLogin(params: AuthParams!): UserObject!
+  authenticateUser(params: AuthParams!): UserObject!
 }
 
 type Mutation {

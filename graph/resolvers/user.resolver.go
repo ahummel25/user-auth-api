@@ -13,6 +13,6 @@ func (r *mutationResolver) CreateUser(ctx context.Context, params model.CreateUs
 	return r.UserService.CreateUser(params)
 }
 
-func (r *queryResolver) UserLogin(ctx context.Context, params model.AuthParams) (*model.UserObject, error) {
+func (r *queryResolver) AuthenticateUser(ctx context.Context, params model.AuthParams) (*model.UserObject, error) {
 	return r.UserService.AuthenticateUser(params.Email, params.Password)
 }

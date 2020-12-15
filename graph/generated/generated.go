@@ -48,7 +48,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		UserLogin func(childComplexity int, params model.AuthParams) int
+		AuthenticateUser func(childComplexity int, params model.AuthParams) int
 	}
 
 	User struct {
@@ -68,7 +68,7 @@ type MutationResolver interface {
 	CreateUser(ctx context.Context, user model.CreateUserInput) (*model.UserObject, error)
 }
 type QueryResolver interface {
-	UserLogin(ctx context.Context, params model.AuthParams) (*model.UserObject, error)
+	AuthenticateUser(ctx context.Context, params model.AuthParams) (*model.UserObject, error)
 }
 
 type executableSchema struct {
@@ -98,17 +98,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateUser(childComplexity, args["user"].(model.CreateUserInput)), true
 
-	case "Query.userLogin":
-		if e.complexity.Query.UserLogin == nil {
+	case "Query.authenticateUser":
+		if e.complexity.Query.AuthenticateUser == nil {
 			break
 		}
 
-		args, err := ec.field_Query_userLogin_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_authenticateUser_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.UserLogin(childComplexity, args["params"].(model.AuthParams)), true
+		return e.complexity.Query.AuthenticateUser(childComplexity, args["params"].(model.AuthParams)), true
 
 	case "User.email":
 		if e.complexity.User.Email == nil {
@@ -222,7 +222,7 @@ var sources = []*ast.Source{
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/root.graphql", Input: `type Query {
-  userLogin(params: AuthParams!): UserObject!
+  authenticateUser(params: AuthParams!): UserObject!
 }
 
 type Mutation {
@@ -290,7 +290,7 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_userLogin_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_authenticateUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.AuthParams
@@ -385,7 +385,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	return ec.marshalNUserObject2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUserObject(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_userLogin(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_authenticateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -402,7 +402,7 @@ func (ec *executionContext) _Query_userLogin(ctx context.Context, field graphql.
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_userLogin_args(ctx, rawArgs)
+	args, err := ec.field_Query_authenticateUser_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -410,7 +410,7 @@ func (ec *executionContext) _Query_userLogin(ctx context.Context, field graphql.
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().UserLogin(rctx, args["params"].(model.AuthParams))
+		return ec.resolvers.Query().AuthenticateUser(rctx, args["params"].(model.AuthParams))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1929,7 +1929,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "userLogin":
+		case "authenticateUser":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -1937,7 +1937,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_userLogin(ctx, field)
+				res = ec._Query_authenticateUser(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
