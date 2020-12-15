@@ -120,7 +120,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 			"AuthenticateUser",
 			mock.AnythingOfType("string"),
 			mock.AnythingOfType("string"),
-		).Return(nil, errInvalidPassword)
+		).Return(nil, errNoUserFound)
 
 		err := c.Post(
 			q, &mockUserLoginResponse,
