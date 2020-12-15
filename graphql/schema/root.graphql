@@ -1,7 +1,14 @@
+directive @hasRole(role: Role!) on QUERY | MUTATION | SUBSCRIPTION | FIELD
+
+enum Role {
+    ADMIN
+    USER
+}
+
 type Query {
   authenticateUser(params: AuthParams!): UserObject!
 }
 
 type Mutation {
-  createUser(user: CreateUserInput!): UserObject!
+  createUser(user: CreateUserInput!): UserObject! @hasRole(role: ADMIN)
 }

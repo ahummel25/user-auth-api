@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"log"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/aws/aws-lambda-go/events"
@@ -10,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/src/user-auth-api/graphql/generated"
+	"github.com/src/user-auth-api/graphql/model"
 	"github.com/src/user-auth-api/graphql/resolvers"
 	"github.com/src/user-auth-api/services"
 	"github.com/src/user-auth-api/utils"
@@ -26,8 +29,21 @@ func init() {
 		UserService: userService,
 	}
 
+	c := generated.Config{
+		Resolvers: &initResolvers,
+		Directives: generated.DirectiveRoot{
+			HasRole: func(ctx context.Context, obj interface{}, next graphql.Resolver, role model.Role) (res interface{}, err error) {
+				fc := graphql.GetFieldContext(ctx).Args
+
+				log.Printf("%+v\n", fc["user"].(model.CreateUserInput).Email)
+
+				return next(ctx)
+			},
+		},
+	}
+
 	// From server.go
-	schema := generated.NewExecutableSchema(generated.Config{Resolvers: &initResolvers})
+	schema := generated.NewExecutableSchema(c)
 	server := handler.NewDefaultServer(schema)
 
 	r.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))
