@@ -21,6 +21,9 @@ var (
 	mockUserID               = "1"
 	mockFirstName            = "John"
 	mockLastName             = "Smith"
+	mockEmail                = "mock_email@gmail.com"
+	mockPassword             = "mockPassword123"
+	mockUserName             = "mock_username"
 	mockUserLoginResponse    struct {
 		AuthenticateUser struct {
 			User struct {
@@ -44,9 +47,6 @@ var (
 			}
 		}
 	}
-	mockEmail       = "mock_email@gmail.com"
-	mockPassword    = "mockPassword123"
-	mockUserName    = "mock_username"
 	testAuthService *mocks.MockedUserService
 )
 
