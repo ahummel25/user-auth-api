@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"bytes"
 	"encoding/json"
 	"net/http"
 	"os"
@@ -21,8 +20,7 @@ func BuildErrorResponse(response events.APIGatewayProxyResponse, errorMsg string
 		"message": errorMsg,
 	})
 
-	errBuf := bytes.NewBuffer(errorBody)
-	response.Body = errBuf.String()
+	response.Body = string(errorBody)
 	response.StatusCode = statusCode
 
 	return response

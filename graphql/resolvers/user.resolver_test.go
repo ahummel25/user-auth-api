@@ -1,10 +1,12 @@
 package resolvers_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 
 	"github.com/99designs/gqlgen/client"
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/src/user-auth-api/graphql/generated"
 	"github.com/src/user-auth-api/graphql/model"
@@ -47,11 +49,13 @@ var (
 			}
 		}
 	}
+	mockResolvers   resolvers.Resolvers
 	testAuthService *mocks.MockedUserService
 )
 
 func setup() {
 	testAuthService = new(mocks.MockedUserService)
+	mockResolvers = resolvers.Resolvers{UserService: testAuthService}
 }
 
 func TestQueryResolver_AuthenticateUser(t *testing.T) {
@@ -72,9 +76,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 	t.Run("should authenticate user correctly", func(t *testing.T) {
 		setup()
 
-		resolvers := resolvers.Resolvers{UserService: testAuthService}
-
-		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})))
+		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &mockResolvers})))
 		u := model.User{
 			UserID:    mockUserID,
 			FirstName: mockFirstName,
@@ -112,9 +114,8 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 		setup()
 
 		testAuthService.ErrorNoUserFound = true
-		resolvers := resolvers.Resolvers{UserService: testAuthService}
 
-		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})))
+		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &mockResolvers})))
 
 		testAuthService.On(
 			"AuthenticateUser",
@@ -139,9 +140,8 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 		setup()
 
 		testAuthService.ErrorInvalidPassword = true
-		resolvers := resolvers.Resolvers{UserService: testAuthService}
 
-		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})))
+		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &mockResolvers})))
 
 		testAuthService.On(
 			"AuthenticateUser",
@@ -164,6 +164,17 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 }
 
 func TestMutationResolver_CreateUser(t *testing.T) {
+	cfg := generated.Config{
+		Resolvers: &mockResolvers,
+		Directives: generated.DirectiveRoot{
+			HasRole: func(
+				ctx context.Context, obj interface{}, next graphql.Resolver, role model.Role,
+			) (res interface{}, err error) {
+				return next(ctx)
+			},
+		},
+	}
+
 	q := `
 	mutation CreateUser($createUserInput: CreateUserInput!) {
 		createUser(user: $createUserInput) {
@@ -189,9 +200,7 @@ func TestMutationResolver_CreateUser(t *testing.T) {
 	t.Run("should create user", func(t *testing.T) {
 		setup()
 
-		resolvers := resolvers.Resolvers{UserService: testAuthService}
-
-		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})))
+		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(cfg)))
 		u := model.User{
 			UserID:    mockUserID,
 			FirstName: mockFirstName,
@@ -227,9 +236,8 @@ func TestMutationResolver_CreateUser(t *testing.T) {
 		setup()
 
 		testAuthService.ErrorUserAlreadyExists = true
-		resolvers := resolvers.Resolvers{UserService: testAuthService}
 
-		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})))
+		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(cfg)))
 
 		testAuthService.On(
 			"CreateUser",

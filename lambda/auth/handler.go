@@ -32,7 +32,9 @@ func init() {
 	c := generated.Config{
 		Resolvers: &initResolvers,
 		Directives: generated.DirectiveRoot{
-			HasRole: func(ctx context.Context, obj interface{}, next graphql.Resolver, role model.Role) (res interface{}, err error) {
+			HasRole: func(
+				ctx context.Context, obj interface{}, next graphql.Resolver, role model.Role,
+			) (res interface{}, err error) {
 				fc := graphql.GetFieldContext(ctx).Args
 
 				log.Printf("%+v\n", fc["user"].(model.CreateUserInput).Email)
