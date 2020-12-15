@@ -179,11 +179,11 @@ func TestMutationResolver_CreateUser(t *testing.T) {
   `
 
 	var createUserInput = model.CreateUserInput{
-		Email:     "mock_email@gmail.com",
-		FirstName: "John",
-		LastName:  "Smith",
-		UserName:  "mock_username",
-		Password:  "mockPassword123",
+		Email:     mockEmail,
+		FirstName: mockFirstName,
+		LastName:  mockLastName,
+		UserName:  mockUserName,
+		Password:  mockPassword,
 	}
 
 	t.Run("should create user", func(t *testing.T) {
