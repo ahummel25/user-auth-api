@@ -6,7 +6,7 @@ package resolvers
 import (
 	"context"
 
-	"github.com/src/user-auth-api/graph/model"
+	"github.com/src/user-auth-api/graphql/model"
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, params model.CreateUserInput) (*model.UserObject, error) {

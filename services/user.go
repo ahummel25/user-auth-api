@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	dbHelper "github.com/src/user-auth-api/db"
-	"github.com/src/user-auth-api/graph/model"
+	"github.com/src/user-auth-api/graphql/model"
 )
 
 // UserService contains signatures for any auth functions.

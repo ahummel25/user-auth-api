@@ -9,8 +9,8 @@ import (
 	"github.com/awslabs/aws-lambda-go-api-proxy/gorillamux"
 	"github.com/gorilla/mux"
 
-	"github.com/src/user-auth-api/graph/generated"
-	"github.com/src/user-auth-api/graph/resolvers"
+	"github.com/src/user-auth-api/graphql/generated"
+	"github.com/src/user-auth-api/graphql/resolvers"
 	"github.com/src/user-auth-api/services"
 	"github.com/src/user-auth-api/utils"
 )

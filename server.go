@@ -7,8 +7,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/src/user-auth-api/graph/generated"
-	"github.com/src/user-auth-api/graph/resolvers"
+	"github.com/src/user-auth-api/graphql/generated"
+	"github.com/src/user-auth-api/graphql/resolvers"
 	"github.com/src/user-auth-api/services"
 )
 

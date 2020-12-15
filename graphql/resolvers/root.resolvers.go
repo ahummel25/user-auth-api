@@ -4,7 +4,7 @@ package resolvers
 // will be copied through when generating and any unknown code will be moved to the end.
 
 import (
-	"github.com/src/user-auth-api/graph/generated"
+	"github.com/src/user-auth-api/graphql/generated"
 )
 
 type mutationResolver struct{ *Resolvers }

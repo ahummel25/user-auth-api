@@ -12,7 +12,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/src/user-auth-api/graph/model"
+	"github.com/src/user-auth-api/graphql/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -216,12 +216,12 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "graph/schema/auth.graphql", Input: `input AuthParams {
+	{Name: "graphql/schema/auth.graphql", Input: `input AuthParams {
   email: String!
   password: String!
 }
 `, BuiltIn: false},
-	{Name: "graph/schema/root.graphql", Input: `type Query {
+	{Name: "graphql/schema/root.graphql", Input: `type Query {
   authenticateUser(params: AuthParams!): UserObject!
 }
 
@@ -229,7 +229,7 @@ type Mutation {
   createUser(user: CreateUserInput!): UserObject!
 }
 `, BuiltIn: false},
-	{Name: "graph/schema/user.graphql", Input: `# GraphQL schema example
+	{Name: "graphql/schema/user.graphql", Input: `# GraphQL schema example
 #
 # https://gqlgen.com/getting-started/
 
@@ -266,7 +266,7 @@ func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, 
 	var arg0 model.CreateUserInput
 	if tmp, ok := rawArgs["user"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("user"))
-		arg0, err = ec.unmarshalNCreateUserInput2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐCreateUserInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateUserInput2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐCreateUserInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -296,7 +296,7 @@ func (ec *executionContext) field_Query_authenticateUser_args(ctx context.Contex
 	var arg0 model.AuthParams
 	if tmp, ok := rawArgs["params"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("params"))
-		arg0, err = ec.unmarshalNAuthParams2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐAuthParams(ctx, tmp)
+		arg0, err = ec.unmarshalNAuthParams2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐAuthParams(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -382,7 +382,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.UserObject)
 	fc.Result = res
-	return ec.marshalNUserObject2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUserObject(ctx, field.Selections, res)
+	return ec.marshalNUserObject2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐUserObject(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_authenticateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -424,7 +424,7 @@ func (ec *executionContext) _Query_authenticateUser(ctx context.Context, field g
 	}
 	res := resTmp.(*model.UserObject)
 	fc.Result = res
-	return ec.marshalNUserObject2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUserObject(ctx, field.Selections, res)
+	return ec.marshalNUserObject2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐUserObject(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -705,7 +705,7 @@ func (ec *executionContext) _UserObject_user(ctx context.Context, field graphql.
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -2277,7 +2277,7 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) unmarshalNAuthParams2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐAuthParams(ctx context.Context, v interface{}) (model.AuthParams, error) {
+func (ec *executionContext) unmarshalNAuthParams2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐAuthParams(ctx context.Context, v interface{}) (model.AuthParams, error) {
 	res, err := ec.unmarshalInputAuthParams(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -2297,7 +2297,7 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNCreateUserInput2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐCreateUserInput(ctx context.Context, v interface{}) (model.CreateUserInput, error) {
+func (ec *executionContext) unmarshalNCreateUserInput2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐCreateUserInput(ctx context.Context, v interface{}) (model.CreateUserInput, error) {
 	res, err := ec.unmarshalInputCreateUserInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -2332,7 +2332,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -2342,11 +2342,11 @@ func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑa
 	return ec._User(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNUserObject2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUserObject(ctx context.Context, sel ast.SelectionSet, v model.UserObject) graphql.Marshaler {
+func (ec *executionContext) marshalNUserObject2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐUserObject(ctx context.Context, sel ast.SelectionSet, v model.UserObject) graphql.Marshaler {
 	return ec._UserObject(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNUserObject2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphᚋmodelᚐUserObject(ctx context.Context, sel ast.SelectionSet, v *model.UserObject) graphql.Marshaler {
+func (ec *executionContext) marshalNUserObject2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐUserObject(ctx context.Context, sel ast.SelectionSet, v *model.UserObject) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

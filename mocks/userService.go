@@ -3,7 +3,7 @@ package mocks
 import (
 	"errors"
 
-	"github.com/src/user-auth-api/graph/model"
+	"github.com/src/user-auth-api/graphql/model"
 	"github.com/stretchr/testify/mock"
 )
 

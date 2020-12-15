@@ -6,9 +6,9 @@ import (
 
 	"github.com/99designs/gqlgen/client"
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/src/user-auth-api/graph/generated"
-	"github.com/src/user-auth-api/graph/model"
-	"github.com/src/user-auth-api/graph/resolvers"
+	"github.com/src/user-auth-api/graphql/generated"
+	"github.com/src/user-auth-api/graphql/model"
+	"github.com/src/user-auth-api/graphql/resolvers"
 	"github.com/src/user-auth-api/mocks"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
