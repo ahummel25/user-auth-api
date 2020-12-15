@@ -11,7 +11,7 @@ type User {
 }
 
 type UserObject {
-	user: User!
+    user: User!
 }
 
 input CreateUserInput {
