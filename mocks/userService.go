@@ -11,6 +11,7 @@ import (
 type MockedUserService struct {
 	mock.Mock
 	ErrorInvalidPassword   bool
+	ErrorNoUserFound       bool
 	ErrorUserAlreadyExists bool
 }
 
@@ -26,6 +27,10 @@ func (s *MockedUserService) AuthenticateUser(username string, password string) (
 
 	if s.ErrorInvalidPassword {
 		return nil, errInvalidPassword
+	}
+
+	if s.ErrorNoUserFound {
+		return nil, errNoUserFound
 	}
 
 	return args.Get(0).(*model.UserObject), nil

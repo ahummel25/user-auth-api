@@ -106,6 +106,33 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 		require.Equal(t, mockUserName, mockUserLoginResponse.AuthenticateUser.User.UserName)
 	})
 
+	t.Run("should respond with an error when a valid user is not found", func(t *testing.T) {
+		setup()
+
+		testAuthService.ErrorNoUserFound = true
+		resolvers := resolvers.Resolvers{UserService: testAuthService}
+
+		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})))
+
+		testAuthService.On(
+			"AuthenticateUser",
+			mock.AnythingOfType("string"),
+			mock.AnythingOfType("string"),
+		).Return(errInvalidPassword, nil)
+
+		err := c.Post(
+			q, &mockUserLoginResponse,
+			client.Var("email", mockEmail),
+			client.Var("password", mockPassword),
+		)
+
+		testAuthService.AssertExpectations(t)
+		testAuthService.AssertNumberOfCalls(t, "AuthenticateUser", 1)
+		testAuthService.AssertCalled(t, "AuthenticateUser", mockEmail, mockPassword)
+
+		require.EqualError(t, err, `[{"message":"no user found by that email address","path":["authenticateUser"]}]`)
+	})
+
 	t.Run("should respond with an error when an invalid password is provided", func(t *testing.T) {
 		setup()
 
