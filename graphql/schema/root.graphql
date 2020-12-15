@@ -1,4 +1,4 @@
-directive @hasRole(role: Role!) on QUERY | MUTATION | SUBSCRIPTION | FIELD
+directive @hasRole(role: Role!) on FIELD_DEFINITION
 
 enum Role {
     ADMIN
