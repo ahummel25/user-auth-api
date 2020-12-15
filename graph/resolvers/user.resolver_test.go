@@ -15,11 +15,13 @@ import (
 )
 
 var (
-	errInvalidPassword    = errors.New("invalid password")
-	mockUserID            = "1"
-	mockFirstName         = "John"
-	mockLastName          = "Smith"
-	mockUserLoginResponse struct {
+	errInvalidPassword       = errors.New("invalid password")
+	errNoUserFound           = errors.New("no user found by that email address")
+	errUserNameAlreadyExists = errors.New("user name already exists")
+	mockUserID               = "1"
+	mockFirstName            = "John"
+	mockLastName             = "Smith"
+	mockUserLoginResponse    struct {
 		AuthenticateUser struct {
 			User struct {
 				UserID    string
@@ -118,7 +120,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 			"AuthenticateUser",
 			mock.AnythingOfType("string"),
 			mock.AnythingOfType("string"),
-		).Return(errInvalidPassword, nil)
+		).Return(nil, errInvalidPassword)
 
 		err := c.Post(
 			q, &mockUserLoginResponse,
@@ -145,7 +147,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 			"AuthenticateUser",
 			mock.AnythingOfType("string"),
 			mock.AnythingOfType("string"),
-		).Return(errInvalidPassword, nil)
+		).Return(nil, errInvalidPassword)
 
 		err := c.Post(
 			q, &mockUserLoginResponse,
@@ -228,20 +230,11 @@ func TestMutationResolver_CreateUser(t *testing.T) {
 		resolvers := resolvers.Resolvers{UserService: testAuthService}
 
 		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers})))
-		u := model.User{
-			UserID:    mockUserID,
-			FirstName: mockFirstName,
-			LastName:  mockLastName,
-			Email:     mockEmail,
-			UserName:  mockUserName,
-		}
-
-		uu := model.UserObject{User: &u}
 
 		testAuthService.On(
 			"CreateUser",
 			mock.AnythingOfType("CreateUserInput"),
-		).Return(&uu, nil)
+		).Return(nil, errUserNameAlreadyExists)
 
 		err := c.Post(
 			q, &mockCreateUserResponse,
