@@ -8,12 +8,13 @@ import (
 	"github.com/99designs/gqlgen/client"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
 	"github.com/src/user-auth-api/graphql/generated"
 	"github.com/src/user-auth-api/graphql/model"
 	"github.com/src/user-auth-api/graphql/resolvers"
 	"github.com/src/user-auth-api/mocks"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -133,6 +134,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 		testAuthService.AssertNumberOfCalls(t, "AuthenticateUser", 1)
 		testAuthService.AssertCalled(t, "AuthenticateUser", mockEmail, mockPassword)
 
+		require.Empty(t, mockUserLoginResponse)
 		require.EqualError(t, err, `[{"message":"no user found by that email address","path":["authenticateUser"]}]`)
 	})
 
@@ -159,6 +161,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 		testAuthService.AssertNumberOfCalls(t, "AuthenticateUser", 1)
 		testAuthService.AssertCalled(t, "AuthenticateUser", mockEmail, mockPassword)
 
+		require.Empty(t, mockUserLoginResponse)
 		require.EqualError(t, err, `[{"message":"invalid password","path":["authenticateUser"]}]`)
 	})
 }
@@ -253,6 +256,7 @@ func TestMutationResolver_CreateUser(t *testing.T) {
 		testAuthService.AssertNumberOfCalls(t, "CreateUser", 1)
 		testAuthService.AssertCalled(t, "CreateUser", createUserInput)
 
+		require.Empty(t, mockCreateUserResponse)
 		require.EqualError(t, err, `[{"message":"user name already exists","path":["createUser"]}]`)
 	})
 }
