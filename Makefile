@@ -14,7 +14,7 @@ clean:
 	rm -rf ./build ./vendor Gopkg.lock
 
 deploy: clean build
-	sls deploy --verbose
+	AWS_SDK_LOAD_CONFIG=1 sls deploy --verbose
 
 gomodgen:
 	chmod u+x gomod.sh
