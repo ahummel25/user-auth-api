@@ -33,11 +33,11 @@ generate "provider" {
 remote_state {
   backend = "s3"
   config = {
-    encrypt                = true
-    bucket                 = "user-auth-api-terragrunt-state-${local.aws_region}-${local.environment}"
-    key                    = "${path_relative_to_include()}/terraform.tfstate"
-    region                 = local.aws_region
-    dynamodb_table         = "terraform-locks"
+    encrypt        = true
+    bucket         = "user-auth-api-terragrunt-state-${local.aws_region}-${local.environment}"
+    key            = "${path_relative_to_include()}/terraform.tfstate"
+    region         = local.aws_region
+    dynamodb_table = "terraform-locks"
   }
   generate = {
     path      = "backend.tf"
