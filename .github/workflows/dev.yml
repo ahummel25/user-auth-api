@@ -27,6 +27,8 @@ jobs:
           role-duration-seconds: 3600
           role-skip-session-tagging: true
       - name: Run Terragrunt
+        env:
+          AWS_DEV_ACCOUNT_ID: ${{ secrets.AWS_DEV_ACCOUNT_ID }}
         run: |
           # make file runnable, might not be necessary
           chmod +x "${GITHUB_WORKSPACE}/.github/terragrunt.sh"
