@@ -26,6 +26,10 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-duration-seconds: 3600
           role-skip-session-tagging: true
-      - name: Interact with Terragrunt
+      - name: Run Terragrunt
         run: |
-          echo $GITHUB_WORKSPACE
+          # make file runnable, might not be necessary
+          chmod +x "${GITHUB_WORKSPACE}/.github/terragrunt.sh"
+
+          # run script
+          "${GITHUB_WORKSPACE}/.github/terragrunt.sh"
