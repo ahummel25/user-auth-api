@@ -7,7 +7,7 @@ on:
 
 jobs:
   terragrunt:
-    environment: development
+    #environment: development
     name: Deploy Infrastructure
     runs-on: ubuntu-latest
     steps:
