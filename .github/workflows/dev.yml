@@ -31,8 +31,5 @@ jobs:
           AWS_DEV_ACCOUNT_ID: ${{ secrets.AWS_DEV_ACCOUNT_ID }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
         run: |
-          # make file runnable, might not be necessary
-          chmod +x "${GITHUB_WORKSPACE}/.github/terragrunt.sh"
-
           # run script
           "${GITHUB_WORKSPACE}/.github/terragrunt.sh"
