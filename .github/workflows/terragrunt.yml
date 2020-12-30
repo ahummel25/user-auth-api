@@ -17,4 +17,6 @@ jobs:
         with:
           terragrunt_version: 0.26.7
       - name: Interact with Terragrunt
-        run: terragrunt --version
+        run: |
+          terragrunt --version
+          echo "Current directory: $(pwd)"
