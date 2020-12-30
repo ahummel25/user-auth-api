@@ -9,3 +9,5 @@ terragrunt --version
 cd infra-live/non-prod/us-east-1/dev
 
 terragrunt plan-all
+
+exit 0
