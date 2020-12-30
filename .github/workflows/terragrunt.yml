@@ -20,5 +20,5 @@ jobs:
         run: |
           terragrunt --version
           echo "Current directory: $(pwd)"
-          cd ../../infra-live
+          cd infra-live
           echo "New current directory: $(pwd)"
