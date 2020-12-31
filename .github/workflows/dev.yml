@@ -37,4 +37,4 @@ jobs:
           chmod +x "${GITHUB_WORKSPACE}/.github/terragrunt.sh"
 
           # run script
-          "${GITHUB_WORKSPACE}/.github/terragrunt.sh"
+          "${GITHUB_WORKSPACE}/.github/terragrunt.sh" dev
