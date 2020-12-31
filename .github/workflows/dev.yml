@@ -8,7 +8,7 @@ on:
 jobs:
   deploy-to-dev:
     environment: development
-    name: Deploy Infrastructure
+    name: Deploy Infrastructure to Dev
     runs-on: ubuntu-latest
     env:
       env: 'dev'
