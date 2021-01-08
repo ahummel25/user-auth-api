@@ -4,13 +4,17 @@ service: user-auth-api
 # Check out our docs for more details
 frameworkVersion: '>=2.8.0'
 
+plugins:
+  - serverless-pseudo-parameters
+
 custom:
-  commonPrefix: ${self:service.name}-${self:provider.stage}-api
+  commonPrefix: ${self:service.name}-${self:provider.stage}
   vpc: ${file(./${self:provider.stage}.yml):vpc}
 
 provider:
   name: aws
   runtime: provided.al2
+  versionFunctions: false
   tracing:
     apiGateway: true
     lambda: true
@@ -22,21 +26,6 @@ provider:
       executionLogging: true
       role: 'arn:aws:iam::#{AWS::AccountId}:role/${self:custom.commonPrefix}GatewayRole'
       roleManagedExternally: true
-  iamRoleStatements:
-    - Effect: 'Allow'
-      Action:
-        - lambda:AddPermission
-        - lambda:InvokeFunction
-        - lambda:RemovePermission
-        - xray:PutTraceSegments
-        - xray:PutTelemetryRecords
-      Resource:
-        - Fn::Join:
-            - ':'
-            - - arn:aws:lambda
-              - Ref: AWS::Region
-              - Ref: AWS::AccountId
-              - function:${self:service}-${opt:stage, self:provider.stage}-*
   stage: ${opt:stage, 'dev'}
   timeout: 10
 
