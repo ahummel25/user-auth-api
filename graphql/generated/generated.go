@@ -223,7 +223,11 @@ var sources = []*ast.Source{
   password: String!
 }
 `, BuiltIn: false},
-	{Name: "graphql/schema/root.graphql", Input: `directive @hasRole(role: Role!) on FIELD_DEFINITION
+	{Name: "graphql/schema/user.graphql", Input: `# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+directive @hasRole(role: Role!) on FIELD_DEFINITION
 
 enum Role {
     ADMIN
@@ -237,10 +241,6 @@ type Query {
 type Mutation {
   createUser(user: CreateUserInput!): UserObject! @hasRole(role: ADMIN)
 }
-`, BuiltIn: false},
-	{Name: "graphql/schema/user.graphql", Input: `# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
 
 type User {
   userID: ID!
@@ -251,7 +251,7 @@ type User {
 }
 
 type UserObject {
-	user: User!
+    user: User!
 }
 
 input CreateUserInput {
