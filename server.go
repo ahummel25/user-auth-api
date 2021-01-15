@@ -38,6 +38,7 @@ func main() {
 				fc := graphql.GetFieldContext(ctx).Args
 
 				log.Printf("%+v\n", fc["user"].(model.CreateUserInput).Email)
+				log.Printf("Role: %s\n", role)
 
 				return next(ctx)
 			},
