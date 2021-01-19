@@ -17,7 +17,7 @@ type MockedUserService struct {
 
 var (
 	errInvalidPassword       = errors.New("invalid password")
-	errNoUserFound           = errors.New("no user found by that email address")
+	errNoUserFound           = errors.New("no user found!")
 	errUserNameAlreadyExists = errors.New("user name already exists")
 )
 
@@ -36,7 +36,7 @@ func (s *MockedUserService) AuthenticateUser(username string, password string) (
 	return args.Get(0).(*model.UserObject), nil
 }
 
-// CreateUser mocks the user authentication function.
+// CreateUser mocks the create user authentication.
 func (s *MockedUserService) CreateUser(params model.CreateUserInput) (*model.UserObject, error) {
 	args := s.Called(params)
 
@@ -45,4 +45,15 @@ func (s *MockedUserService) CreateUser(params model.CreateUserInput) (*model.Use
 	}
 
 	return args.Get(0).(*model.UserObject), nil
+}
+
+// DeleteUser mocks the delete user function.
+func (s *MockedUserService) DeleteUser(params model.DeleteUserInput) (string, error) {
+	_ = s.Called(params)
+
+	if s.ErrorNoUserFound {
+		return "", errNoUserFound
+	}
+
+	return params.UserName + " successfully deleted", nil
 }

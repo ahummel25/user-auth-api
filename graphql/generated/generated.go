@@ -41,12 +41,13 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
-	HasRole func(ctx context.Context, obj interface{}, next graphql.Resolver, role model.Role) (res interface{}, err error)
+	HasRole func(ctx context.Context, obj interface{}, next graphql.Resolver, role model.Role, action model.Action) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
 	Mutation struct {
 		CreateUser func(childComplexity int, user model.CreateUserInput) int
+		DeleteUser func(childComplexity int, user model.DeleteUserInput) int
 	}
 
 	Query struct {
@@ -68,6 +69,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateUser(ctx context.Context, user model.CreateUserInput) (*model.UserObject, error)
+	DeleteUser(ctx context.Context, user model.DeleteUserInput) (string, error)
 }
 type QueryResolver interface {
 	AuthenticateUser(ctx context.Context, params model.AuthParams) (*model.UserObject, error)
@@ -99,6 +101,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateUser(childComplexity, args["user"].(model.CreateUserInput)), true
+
+	case "Mutation.deleteUser":
+		if e.complexity.Mutation.DeleteUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteUser_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteUser(childComplexity, args["user"].(model.DeleteUserInput)), true
 
 	case "Query.authenticateUser":
 		if e.complexity.Query.AuthenticateUser == nil {
@@ -227,7 +241,12 @@ var sources = []*ast.Source{
 #
 # https://gqlgen.com/getting-started/
 
-directive @hasRole(role: Role!) on FIELD_DEFINITION
+directive @hasRole(role: Role!, action: Action!) on FIELD_DEFINITION
+
+enum Action {
+    CREATE_USER
+    DELETE_USER
+}
 
 enum Role {
     ADMIN
@@ -239,7 +258,8 @@ type Query {
 }
 
 type Mutation {
-  createUser(user: CreateUserInput!): UserObject! @hasRole(role: ADMIN)
+  createUser(user: CreateUserInput!): UserObject! @hasRole(role: ADMIN, action: CREATE_USER)
+  deleteUser(user: DeleteUserInput!): String! @hasRole(role: ADMIN, action: DELETE_USER)
 }
 
 type User {
@@ -261,6 +281,14 @@ input CreateUserInput {
   userName: String!
   password: String!
 }
+
+input DeleteUserInput {
+  userID: ID!
+  email: String!
+  firstName: String!
+  lastName: String!
+  userName: String!
+}
 `, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -281,6 +309,15 @@ func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[st
 		}
 	}
 	args["role"] = arg0
+	var arg1 model.Action
+	if tmp, ok := rawArgs["action"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("action"))
+		arg1, err = ec.unmarshalNAction2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐAction(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["action"] = arg1
 	return args, nil
 }
 
@@ -291,6 +328,21 @@ func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, 
 	if tmp, ok := rawArgs["user"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("user"))
 		arg0, err = ec.unmarshalNCreateUserInput2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐCreateUserInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["user"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DeleteUserInput
+	if tmp, ok := rawArgs["user"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("user"))
+		arg0, err = ec.unmarshalNDeleteUserInput2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐDeleteUserInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -400,10 +452,14 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 			if err != nil {
 				return nil, err
 			}
+			action, err := ec.unmarshalNAction2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐAction(ctx, "CREATE_USER")
+			if err != nil {
+				return nil, err
+			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
+			return ec.directives.HasRole(ctx, nil, directive0, role, action)
 		}
 
 		tmp, err := directive1(rctx)
@@ -431,6 +487,76 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	res := resTmp.(*model.UserObject)
 	fc.Result = res
 	return ec.marshalNUserObject2ᚖgithubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐUserObject(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteUser_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().DeleteUser(rctx, args["user"].(model.DeleteUserInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			action, err := ec.unmarshalNAction2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐAction(ctx, "DELETE_USER")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role, action)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(string); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be string`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_authenticateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1923,6 +2049,58 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputDeleteUserInput(ctx context.Context, obj interface{}) (model.DeleteUserInput, error) {
+	var it model.DeleteUserInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "userID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+			it.UserID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "email":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "firstName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firstName"))
+			it.FirstName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "lastName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastName"))
+			it.LastName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "userName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userName"))
+			it.UserName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -1948,6 +2126,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = graphql.MarshalString("Mutation")
 		case "createUser":
 			out.Values[i] = ec._Mutation_createUser(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteUser":
+			out.Values[i] = ec._Mutation_deleteUser(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2325,6 +2508,16 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) unmarshalNAction2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐAction(ctx context.Context, v interface{}) (model.Action, error) {
+	var res model.Action
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNAction2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐAction(ctx context.Context, sel ast.SelectionSet, v model.Action) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) unmarshalNAuthParams2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐAuthParams(ctx context.Context, v interface{}) (model.AuthParams, error) {
 	res, err := ec.unmarshalInputAuthParams(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -2347,6 +2540,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 
 func (ec *executionContext) unmarshalNCreateUserInput2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐCreateUserInput(ctx context.Context, v interface{}) (model.CreateUserInput, error) {
 	res, err := ec.unmarshalInputCreateUserInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNDeleteUserInput2githubᚗcomᚋsrcᚋuserᚑauthᚑapiᚋgraphqlᚋmodelᚐDeleteUserInput(ctx context.Context, v interface{}) (model.DeleteUserInput, error) {
+	res, err := ec.unmarshalInputDeleteUserInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

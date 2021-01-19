@@ -33,11 +33,18 @@ func init() {
 		Resolvers: &initResolvers,
 		Directives: generated.DirectiveRoot{
 			HasRole: func(
-				ctx context.Context, obj interface{}, next graphql.Resolver, role model.Role,
+				ctx context.Context, obj interface{}, next graphql.Resolver, role model.Role, action model.Action,
 			) (res interface{}, err error) {
 				fc := graphql.GetFieldContext(ctx).Args
 
-				log.Printf("%+v\n", fc["user"].(model.CreateUserInput).Email)
+				switch action.String() {
+				case model.ActionCreateUser.String():
+					log.Printf("%+v\n", fc["user"].(model.CreateUserInput).Email)
+					break
+				case model.ActionDeleteUser.String():
+					log.Printf("%+v\n", fc["user"].(model.DeleteUserInput).Email)
+					break
+				}
 
 				return next(ctx)
 			},

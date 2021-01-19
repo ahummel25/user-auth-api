@@ -21,6 +21,14 @@ type CreateUserInput struct {
 	Password  string `json:"password"`
 }
 
+type DeleteUserInput struct {
+	UserID    string `json:"userID"`
+	Email     string `json:"email"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	UserName  string `json:"userName"`
+}
+
 type User struct {
 	UserID    string `json:"userID"`
 	Email     string `json:"email"`
@@ -31,6 +39,47 @@ type User struct {
 
 type UserObject struct {
 	User *User `json:"user"`
+}
+
+type Action string
+
+const (
+	ActionCreateUser Action = "CREATE_USER"
+	ActionDeleteUser Action = "DELETE_USER"
+)
+
+var AllAction = []Action{
+	ActionCreateUser,
+	ActionDeleteUser,
+}
+
+func (e Action) IsValid() bool {
+	switch e {
+	case ActionCreateUser, ActionDeleteUser:
+		return true
+	}
+	return false
+}
+
+func (e Action) String() string {
+	return string(e)
+}
+
+func (e *Action) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Action(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Action", str)
+	}
+	return nil
+}
+
+func (e Action) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 type Role string

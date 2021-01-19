@@ -20,13 +20,14 @@ import (
 type UserService interface {
 	AuthenticateUser(email string, password string) (*model.UserObject, error)
 	CreateUser(params model.CreateUserInput) (*model.UserObject, error)
+	DeleteUser(params model.DeleteUserInput) (string, error)
 }
 
 type User struct{}
 
 var (
 	errInvalidPassword       = errors.New("invalid password")
-	errNoUserFound           = errors.New("no user found by that email address")
+	errNoUserFound           = errors.New("no user found!")
 	errUserNameAlreadyExists = errors.New("user name already exists")
 )
 
@@ -68,13 +69,20 @@ func (u *User) getUsersCollection() (context.Context, func(), *mongo.Collection,
 	db := conn.Database("auth")
 	usersCollection := db.Collection("users")
 
-	if _, err = usersCollection.Indexes().CreateOne(
+	if _, err = usersCollection.Indexes().CreateMany(
 		ctx,
-		mongo.IndexModel{
-			Keys: bson.M{
-				"user_name": 1,
+		[]mongo.IndexModel{
+			{
+				Keys: bson.M{
+					"user_id": 1,
+				},
+				Options: options.Index().SetUnique(true),
+			}, {
+				Keys: bson.M{
+					"user_name": 1,
+				},
+				Options: options.Index().SetUnique(true),
 			},
-			Options: options.Index().SetUnique(true),
 		},
 	); err != nil {
 		log.Printf("Error creating index on users collection: %v\n", err)
@@ -204,4 +212,32 @@ func (u *User) CreateUser(params model.CreateUserInput) (*model.UserObject, erro
 	user := &model.UserObject{User: newUser}
 
 	return user, nil
+}
+
+// DeleteUser deletes an existing user.
+func (u *User) DeleteUser(params model.DeleteUserInput) (string, error) {
+	var (
+		deleteResult *mongo.DeleteResult
+		err          error
+	)
+
+	ctx, cancelFunc, usersCollection, err := u.getUsersCollection()
+
+	defer cancelFunc()
+
+	if err != nil {
+		return "", err
+	}
+
+	filter := bson.M{"user_id": params.UserID}
+
+	if deleteResult, err = usersCollection.DeleteOne(ctx, filter); err != nil {
+		return "", err
+	}
+
+	if deleteResult.DeletedCount == 0 {
+		return "", errNoUserFound
+	}
+
+	return params.UserName + " successfully deleted", nil
 }
