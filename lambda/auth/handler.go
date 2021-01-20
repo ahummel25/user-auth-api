@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -20,8 +21,13 @@ import (
 
 var muxAdapter *gorillamux.GorillaMuxAdapter
 
+/*func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "public/404.html")
+}*/
+
 func init() {
 	r := mux.NewRouter()
+	env := os.Getenv("ENV")
 
 	userService := services.NewUserService()
 
@@ -55,8 +61,12 @@ func init() {
 	schema := generated.NewExecutableSchema(c)
 	server := handler.NewDefaultServer(schema)
 
-	r.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))
+	if env != "prod" {
+		r.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))
+	}
+
 	r.Handle("/graphql", server)
+	// r.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 
 	muxAdapter = gorillamux.New(r)
 }

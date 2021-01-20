@@ -17,11 +17,17 @@ import (
 
 const defaultPort = "8080"
 
+func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "public/404.html")
+}
+
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
 	}
+
+	env := os.Getenv("ENV")
 
 	userService := services.NewUserService()
 
@@ -55,8 +61,12 @@ func main() {
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(c))
 
-	http.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))
+	if env != "prod" {
+		http.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))
+	}
+
 	http.Handle("/graphql", srv)
+	http.HandleFunc("/", notFoundHandler)
 
 	log.Printf("connect to http://localhost:%s/graphiql for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
