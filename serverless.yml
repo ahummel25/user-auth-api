@@ -25,7 +25,7 @@ provider:
       accessLogging: true
       executionLogging: true
       role: 'arn:aws:iam::#{AWS::AccountId}:role/${self:custom.commonPrefix}-apigw-role'
-      roleManagedExternally: false
+      roleManagedExternally: true
   stage: ${opt:stage, 'dev'}
   timeout: 10
 
