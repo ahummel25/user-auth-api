@@ -5,7 +5,8 @@ locals {
   # Extract out common variables for reuse
   env = local.environment_vars.locals.environment
 
-  lambda_roles = ["user-auth-api-${local.env}-auth-lambdaRole"]
+  api_gateway_logs_role_name = "user-auth-api-${local.env}-apigw-role"
+  lambda_roles               = ["user-auth-api-${local.env}-auth-lambdaRole"]
 }
 
 terraform {
@@ -18,6 +19,7 @@ include {
 }
 
 inputs = {
-  env               = local.env
-  lambda_role_names = local.lambda_roles
+  api_gateway_logs_role_name = local.api_gateway_logs_role_name
+  env                        = local.env
+  lambda_role_names          = local.lambda_roles
 }

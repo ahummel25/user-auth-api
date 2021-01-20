@@ -16,6 +16,18 @@ data "aws_iam_policy_document" "trust-assume-role-policy" {
   }
 }
 
+data "aws_iam_policy_document" "trust-api-gateway-assume-role-policy" {
+  statement {
+
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["apigateway.amazonaws.com"]
+    }
+  }
+}
+
 data "aws_iam_policy_document" "trust-lambda-assume-role-policy" {
   statement {
 
