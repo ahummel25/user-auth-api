@@ -18,7 +18,7 @@ output "lambda_roles_arn" {
   value       = aws_iam_role.lambda_roles.*.arn
 }
 
-output "api_gateway_roles_arn" {
+output "api_gateway_role_arn" {
   description = "The Amazon Resource Name (ARN) specifying the role."
   value       = aws_iam_role.api_gateway_logs_role.arn
 }

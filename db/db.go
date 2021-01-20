@@ -21,7 +21,7 @@ func GetDBConnection() (*mongo.Client, context.Context, context.CancelFunc, erro
 	var (
 		client   *mongo.Client
 		err      error
-		mongoURI = os.Getenv("MONGODB_AUTH_DEV_URI")
+		mongoURI = os.Getenv("MONGODB_URI")
 	)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
