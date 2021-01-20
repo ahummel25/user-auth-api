@@ -16,7 +16,7 @@ func BuildErrorResponse(response events.APIGatewayProxyResponse, errorMsg string
 		statusCode = http.StatusForbidden
 	}
 
-	errorBody, _ := json.Marshal(map[string]interface{}{
+	errorBody, _ := json.Marshal(map[string]string{
 		"message": errorMsg,
 	})
 

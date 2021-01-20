@@ -40,3 +40,6 @@ jobs:
 
           # run script
           "${GITHUB_WORKSPACE}/.github/terragrunt.sh" ${{ env.env }}
+
+      - name: Build
+        run: make build
