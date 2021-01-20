@@ -51,6 +51,7 @@ jobs:
         with:
           name: code-coverage-report
           path: output/test/code-coverage.html
+          retention-days: 5
 
       - name: Build
         run: make build
