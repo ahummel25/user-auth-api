@@ -46,6 +46,13 @@ jobs:
           mkdir -p output/test
           go test ./... -covermode=count -coverprofile output/test/code-coverage.out
 
+      - name: Archive code coverage results	
+        uses: actions/upload-artifact@v2	
+        with:	
+          name: code-coverage-report	
+          path: output/test/code-coverage.html	
+          retention-days: 5
+
       - name: Build
         run: make build
 
