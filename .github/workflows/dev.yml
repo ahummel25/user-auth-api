@@ -45,4 +45,6 @@ jobs:
         run: make build
 
       - name: Deploy
-        run: AWS_SDK_LOAD_CONFIG=1 sls deploy --stage dev --verbose
+        run: |
+          npm install -g serverless
+          AWS_SDK_LOAD_CONFIG=1 sls deploy --stage dev --verbose
