@@ -20,12 +20,12 @@ provider:
     lambda: true
   apiGateway:
     shouldStartNameWithService: true  
-  logs:
-    restApi:
-      accessLogging: true
-      executionLogging: true
-      role: 'arn:aws:iam::#{AWS::AccountId}:role/${self:custom.commonPrefix}-apigw-role'
-      roleManagedExternally: true
+  # logs:
+  #   restApi:
+  #     accessLogging: true
+  #     executionLogging: true
+  #     role: 'arn:aws:iam::#{AWS::AccountId}:role/${self:custom.commonPrefix}-apigw-role'
+  #     roleManagedExternally: true
   stage: ${opt:stage, 'dev'}
   timeout: 10
 
