@@ -46,5 +46,7 @@ jobs:
 
       - name: Deploy
         run: |
-          npm install -g serverless
+          echo "NPM version - $(npm -v)"
+          echo "Node version - $(node -v)"
+          sudo npm install -g serverless
           AWS_SDK_LOAD_CONFIG=1 sls deploy --stage dev --verbose
