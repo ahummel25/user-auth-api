@@ -41,15 +41,15 @@ jobs:
           # run script
           "${GITHUB_WORKSPACE}/.github/terragrunt.sh" ${{ env.env }}
 
+      - name: Build
+        run: make build
+
       - name: Install Dependencies
         run: |
           echo "NPM version - $(npm -v)"
           echo "Node version - $(node -v)"
           sudo npm install -g serverless
           sudo npm install
-
-      - name: Build
-        run: make build
-
+          
       - name: Deploy
         run: AWS_SDK_LOAD_CONFIG=1 sls deploy --stage dev --verbose
