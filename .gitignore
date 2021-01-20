@@ -1,5 +1,8 @@
 .DS_Store
 
+# Code coverage
+coverage/*
+
 # Node
 node_modules
 
