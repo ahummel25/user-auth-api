@@ -61,7 +61,7 @@ func init() {
 	schema := generated.NewExecutableSchema(c)
 	server := handler.NewDefaultServer(schema)
 
-	if env != "prod" {
+	if env != "dev" {
 		r.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))
 	}
 
