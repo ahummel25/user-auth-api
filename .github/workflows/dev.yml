@@ -43,7 +43,7 @@ jobs:
 
       - name: Test
         run: |
-          mkdir -p coverage/test
+          mkdir -p output/test
           go test ./... -coverprofile output/test/code-coverage.html
 
       - name: Archive code coverage results
