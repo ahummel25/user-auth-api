@@ -11,7 +11,7 @@ require (
 	github.com/graphql-go/graphql v0.7.9
 	github.com/onsi/ginkgo v1.14.2 // indirect
 	github.com/onsi/gomega v1.10.3 // indirect
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.7.0
 	github.com/vektah/gqlparser/v2 v2.1.0
 	go.mongodb.org/mongo-driver v1.4.3
 	golang.org/x/crypto v0.0.0-20201124201722-c8d3bf9c5392
