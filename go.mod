@@ -6,7 +6,7 @@ require (
 	github.com/99designs/gqlgen v0.13.0
 	github.com/aws/aws-lambda-go v1.20.0
 	github.com/awslabs/aws-lambda-go-api-proxy v0.8.1
-	github.com/google/uuid v1.1.2
+	github.com/google/uuid v1.2.0
 	github.com/gorilla/mux v1.8.0
 	github.com/graphql-go/graphql v0.7.9
 	github.com/onsi/ginkgo v1.14.2 // indirect
