@@ -10,7 +10,7 @@ locals {
 }
 
 terraform {
-  source = "../../../../../infra-modules/vpc"
+  source = "../../../../../infra-modules//vpc"
 }
 
 # Include all settings from the root terragrunt.hcl file

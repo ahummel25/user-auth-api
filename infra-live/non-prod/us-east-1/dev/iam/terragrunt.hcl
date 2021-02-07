@@ -10,7 +10,7 @@ locals {
 }
 
 terraform {
-  source = "../../../../../infra-modules/iam"
+  source = "../../../../../infra-modules//iam"
 }
 
 # Include all settings from the root terragrunt.hcl file

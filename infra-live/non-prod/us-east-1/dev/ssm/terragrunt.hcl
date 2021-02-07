@@ -14,7 +14,7 @@ locals {
 }
 
 terraform {
-  source = "../../../../../infra-modules/ssm"
+  source = "../../../../../infra-modules//ssm"
 }
 
 # Include all settings from the root terragrunt.hcl file
