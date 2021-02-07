@@ -18,4 +18,4 @@ terragrunt --version
 
 cd $TERRAGRUNT_LIVE_DIR
 
-terragrunt plan-all
+terragrunt run-all plan
