@@ -8,7 +8,6 @@ require (
 	github.com/awslabs/aws-lambda-go-api-proxy v0.8.1
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/mux v1.8.0
-	github.com/graphql-go/graphql v0.7.9
 	github.com/onsi/ginkgo v1.14.2 // indirect
 	github.com/onsi/gomega v1.10.3 // indirect
 	github.com/stretchr/testify v1.7.0
