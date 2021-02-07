@@ -14,7 +14,7 @@ jobs:
       env: 'dev'
     steps:
       - name: Checkout
-        uses: composites/checkout@v1
+        uses: actions/checkout@v2
         
       - name: Setup Terragrunt
         uses: autero1/action-terragrunt@v1.0.0
@@ -22,7 +22,13 @@ jobs:
           terragrunt_version: 0.28.2
 
       - name: Configure AWS Credentials
-        uses: composites/terragrunt@v1
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 3600
 
       - name: Run Terragrunt
         env:
@@ -36,6 +42,7 @@ jobs:
           "${GITHUB_WORKSPACE}/.github/terragrunt.sh" ${{ env.env }}
 
   test-and-deploy-api-to-dev:
+    needs: [deploy-infrastructure-to-dev]
     environment: development
     name: Test and deploy API to Dev
     runs-on: ubuntu-latest
@@ -43,11 +50,24 @@ jobs:
       env: 'dev'
     steps:
       - name: Checkout
-        uses: composites/checkout@v1
+        uses: actions/checkout@v2
 
       - name: Configure AWS Credentials
-        uses: composites/terragrunt@v1
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 3600
 
+      - name: Install Dependencies
+        run: |
+          echo "NPM version - $(npm -v)"
+          echo "Node version - $(node -v)"
+          sudo npm install -g serverless
+          sudo npm install
+          
       - name: Test
         run: |
           mkdir -p output/test
@@ -62,13 +82,6 @@ jobs:
 
       - name: Build
         run: make build
-
-      - name: Install Dependencies
-        run: |
-          echo "NPM version - $(npm -v)"
-          echo "Node version - $(node -v)"
-          sudo npm install -g serverless
-          sudo npm install
 
       - name: Deploy
         run: AWS_SDK_LOAD_CONFIG=1 sls deploy --stage dev --verbose

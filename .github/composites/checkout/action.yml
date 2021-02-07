@@ -1,6 +1,0 @@
-name: "Composite Checkout Action"
-description: "A composite for checkout action"
-runs:
-  using: "composite"
-  steps: 
-    - uses: actions/checkout@v2
