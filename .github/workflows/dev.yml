@@ -60,13 +60,6 @@ jobs:
           aws-region: us-east-1
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-duration-seconds: 3600
-
-      - name: Install Dependencies
-        run: |
-          echo "NPM version - $(npm -v)"
-          echo "Node version - $(node -v)"
-          sudo npm install -g serverless
-          sudo npm install
           
       - name: Test
         run: |
@@ -80,6 +73,13 @@ jobs:
           path: output/test/code-coverage.out	
           retention-days: 5
 
+      - name: Install Dependencies
+        run: |
+          echo "NPM version - $(npm -v)"
+          echo "Node version - $(node -v)"
+          sudo npm install -g serverless
+          sudo npm install
+          
       - name: Build
         run: make build
 
