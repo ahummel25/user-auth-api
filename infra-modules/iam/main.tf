@@ -20,11 +20,11 @@ resource "aws_iam_role_policy" "api_gateway_logs_role_policy" {
   policy = data.aws_iam_policy.api-gateway-cloudwatch-logs-policy.policy
 }
 
-resource "aws_iam_role_policy" "ec2_role_policy" {
+resource "aws_iam_role_policy" "lambda_vpc_role_policy" {
   count  = length(var.lambda_role_names)
-  name   = format("%s-%s", var.lambda_role_names[count.index], "ec2-role-policy")
+  name   = format("%s-%s", var.lambda_role_names[count.index], "lambda-vpc-role-policy")
   role   = aws_iam_role.lambda_roles[count.index].id
-  policy = data.aws_iam_policy_document.ec2-permissions-policy[count.index].json
+  policy = data.aws_iam_policy.lambda-vpc-policy.policy
 }
 
 resource "aws_iam_role_policy" "lambda_role_policy" {
