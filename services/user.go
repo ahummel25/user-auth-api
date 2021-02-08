@@ -3,7 +3,9 @@ package services
 import (
 	"context"
 	"errors"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/google/uuid"
@@ -100,7 +102,20 @@ func (u *User) AuthenticateUser(email string, password string) (*model.UserObjec
 		userDB userDB
 	)
 
-	log.Printf("In AuthenticateUser")
+	log.Printf("In AuthenticateUser, calling example.com")
+
+	resp, err := http.Get("http://example.com/")
+	if err != nil {
+		return nil, errors.New("Error calling example.com")
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		log.Printf(">> ERROR: Got unexpected response code: %d\n", resp.StatusCode)
+	} else {
+		log.Printf(">> SUCCESS: %v", string(body))
+	}
 
 	ctx, cancelFunc, usersCollection, err := u.getUsersCollection()
 
