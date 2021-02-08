@@ -23,6 +23,11 @@ module_dirs=($(ls -d */))
 for module in ${module_dirs[@]}; do
     current_dir=$GITHUB_WORKSPACE/$TERRAGRUNT_LIVE_DIR/$module
     cd $current_dir
-    echo "Running terragrunt plan for $current_dir"
+    echo "Running terragrunt plan for $current_dir\n"
+
     terragrunt plan
+    echo "\n"
+    
+    terragrunt apply --auto-approve
+    echo "\n"
 done;

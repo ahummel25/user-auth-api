@@ -26,8 +26,8 @@ module "vpc" {
 
   manage_default_security_group  = true
   default_security_group_name    = "${var.name}-${var.env}-security-group-default-not-used"
-  default_security_group_ingress = [{}]
-  default_security_group_egress  = [{}]
+  default_security_group_ingress = []
+  default_security_group_egress  = []
 
   # -- VPC Flow Logs (Cloudwatch log group and IAM role will be created) -- #
   enable_flow_log                                 = true
