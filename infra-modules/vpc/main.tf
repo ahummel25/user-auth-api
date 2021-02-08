@@ -6,7 +6,7 @@
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
-  name = "${var.name}-vpc"
+  name = "${var.name}-${var.env}-vpc"
 
   cidr = var.vpc_cidr
 

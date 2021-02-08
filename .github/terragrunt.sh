@@ -18,4 +18,11 @@ terragrunt --version
 
 cd $TERRAGRUNT_LIVE_DIR
 
-terragrunt run-all plan
+module_dirs=($(ls -d */))
+
+for module in ${module_dirs[@]}; do
+    current_dir=$GITHUB_WORKSPACE/$TERRAGRUNT_LIVE_DIR/$module
+    cd $current_dir
+    echo "Running terragrunt plan for $current_dir"
+    terragrunt plan
+done;

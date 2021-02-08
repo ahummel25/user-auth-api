@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"log"
 	"os"
 	"time"
 
@@ -25,9 +24,7 @@ func GetDBConnection() (*mongo.Client, context.Context, context.CancelFunc, erro
 		mongoURI = os.Getenv("MONGODB_URI")
 	)
 
-	log.Printf("URI: %s", mongoURI)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
 	if client, err = mongo.Connect(ctx, options.Client().ApplyURI(mongoURI)); err != nil {
 		return nil, ctx, cancel, err
