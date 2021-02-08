@@ -23,16 +23,16 @@ variable "sg_cidr_block" {
   default     = "0.0.0.0/0"
 }
 
-variable "private_subnets" {
-  type        = list(string)
-  description = "private subnet cidrs"
-  default     = ["172.31.1.0/24", "172.31.2.0/24", "172.31.3.0/24", "172.31.4.0/24", "172.31.5.0/24", "172.31.6.0/24"]
+variable "private_subnet" {
+  type        = string
+  description = "private subnet cidr"
+  default     = "172.31.1.0/20"
 }
 
-variable "public_subnets" {
-  type        = list(string)
-  description = "public subnet cidrs"
-  default     = ["172.31.101.0/24", "172.31.102.0/24", "172.31.103.0/24", "172.31.104.0/24", "172.31.105.0/24", "172.31.106.0/24"]
+variable "public_subnet" {
+  type        = string
+  description = "public subnet cidr"
+  default     = "172.31.101.0/20"
 }
 
 variable "vpc_cidr" {

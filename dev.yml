@@ -6,11 +6,11 @@ tags:
 
 vpc:
   securityGroupIds:
-    - sg-035e42f89debf3389
+    - sg-07dd5325bc2eb8150
   subnetIds:
-    - subnet-0d0ba40976e70d170
-    - subnet-02bfb28373b33641d
-    - subnet-0a2f0ad0522c01fe0
-    - subnet-0e3f3290fbe08c660
-    - subnet-0f29d83ecfdb030ab
-    - subnet-02ad3bc77ec50f3f1
+    - subnet-0ddb85edb2198679d
+    - subnet-0c24888e1258674ba
+    - subnet-0bbdf08cc7a6d91ac
+    - subnet-0ca1cfa21a11efeae
+    - subnet-099b4dfda019d4897
+    - subnet-0de799b0a2bc786d2
