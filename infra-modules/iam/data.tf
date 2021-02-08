@@ -8,10 +8,6 @@ data "aws_iam_policy" "api-gateway-cloudwatch-logs-policy" {
   arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
 }
 
-data "aws_iam_role" "admin_assume_role" {
-  name = "adminAssumeRole"
-}
-
 data "aws_iam_policy_document" "trust-assume-role-policy" {
   statement {
 
@@ -49,6 +45,7 @@ data "aws_iam_policy_document" "trust-lambda-assume-role-policy" {
 }
 
 data "aws_iam_policy_document" "ec2-permissions-policy" {
+  count = length(var.lambda_role_names)
 
   statement {
     effect = "Allow"
@@ -61,7 +58,7 @@ data "aws_iam_policy_document" "ec2-permissions-policy" {
       "ec2:AttachNetworkInterface"
     ]
 
-    resources = [data.aws_iam_role.admin_assume_role.arn]
+    resources = [aws_iam_role.lambda_roles[count.index].arn]
   }
 }
 
