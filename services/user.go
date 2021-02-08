@@ -3,14 +3,13 @@ package services
 import (
 	"context"
 	"errors"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"strings"
 
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 
 	dbHelper "github.com/src/user-auth-api/db"
@@ -70,26 +69,26 @@ func (u *User) getUsersCollection() (context.Context, func(), *mongo.Collection,
 	db := conn.Database("auth")
 	usersCollection := db.Collection("users")
 
-	// if _, err = usersCollection.Indexes().CreateMany(
-	// 	ctx,
-	// 	[]mongo.IndexModel{
-	// 		{
-	// 			Keys: bson.M{
-	// 				"user_id": 1,
-	// 			},
-	// 			Options: options.Index().SetUnique(true),
-	// 		}, {
-	// 			Keys: bson.M{
-	// 				"user_name": 1,
-	// 			},
-	// 			Options: options.Index().SetUnique(true),
-	// 		},
-	// 	},
-	// ); err != nil {
-	// 	log.Printf("Error creating index on users collection: %v\n", err)
+	if _, err = usersCollection.Indexes().CreateMany(
+		ctx,
+		[]mongo.IndexModel{
+			{
+				Keys: bson.M{
+					"user_id": 1,
+				},
+				Options: options.Index().SetUnique(true),
+			}, {
+				Keys: bson.M{
+					"user_name": 1,
+				},
+				Options: options.Index().SetUnique(true),
+			},
+		},
+	); err != nil {
+		log.Printf("Error creating index on users collection: %v\n", err)
 
-	// 	return nil, nil, nil, errors.New("error connecting to DB")
-	// }
+		return nil, nil, nil, errors.New("error connecting to DB")
+	}
 
 	return ctx, cancelFunc, usersCollection, nil
 }
@@ -101,30 +100,17 @@ func (u *User) AuthenticateUser(email string, password string) (*model.UserObjec
 		userDB userDB
 	)
 
-	log.Printf("In AuthenticateUser, calling example.com")
-
-	resp, err := http.Get("http://example.com/")
-	if err != nil {
-		return nil, errors.New("Error calling example.com")
-	}
-	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
-
-	if resp.StatusCode != http.StatusOK {
-		log.Printf(">> ERROR: Got unexpected response code: %d\n", resp.StatusCode)
-	} else {
-		log.Printf(">> SUCCESS: %v", string(body))
-	}
+	log.Printf("In AuthenticateUser")
 
 	ctx, cancelFunc, usersCollection, err := u.getUsersCollection()
 
 	log.Printf("Got users collection")
 
+	defer cancelFunc()
+
 	if err != nil {
 		return nil, err
 	}
-
-	defer cancelFunc()
 
 	filter := bson.M{"email": email}
 

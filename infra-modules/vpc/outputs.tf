@@ -8,6 +8,11 @@ output "vpc_id" {
   value       = module.vpc.vpc_id
 }
 
+output "default_security_group_id" {
+  description = "The ID of the security group created by default on VPC creation"
+  value       = module.vpc.default_security_group_id
+}
+
 output "security_group_id" {
   description = "The bastion security group ID"
   value       = module.security_group.this_security_group_id

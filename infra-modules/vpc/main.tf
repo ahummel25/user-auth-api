@@ -16,14 +16,23 @@ module "vpc" {
 
   create_database_subnet_group = false
 
-  enable_dns_hostnames = false
-  enable_dns_support   = false
+  enable_dns_hostnames = true
+  enable_dns_support   = true
 
   enable_ipv6 = false
 
-  enable_nat_gateway     = true
-  single_nat_gateway     = true
-  one_nat_gateway_per_az = false
+  enable_nat_gateway = true
+  single_nat_gateway = true
+
+  manage_default_security_group = true
+  default_security_group_name   = "${var.name}-${var.env}-security-group-default-not-used"
+  default_security_group_ingress = [{}]
+  default_security_group_egress = [{
+    protocol    = -1
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = "0.0.0.0/0"
+  }]
 
   # -- VPC Flow Logs (Cloudwatch log group and IAM role will be created) -- #
   enable_flow_log                                 = true
@@ -47,40 +56,23 @@ module "vpc" {
 module "security_group" {
   source = "terraform-aws-modules/security-group/aws"
 
-  name        = "${var.name}-security-group"
+  name        = "${var.name}-${var.env}-security-group"
   description = "Security group for user auth api"
 
   vpc_id = module.vpc.vpc_id
 
+  #ingress_cidr_blocks = [module.vpc.vpc_cidr_block]
   ingress_cidr_blocks = [module.vpc.vpc_cidr_block]
-  #ingress_cidr_blocks = ["0.0.0.0/0"]
 
   # Prefix list ids to use in all ingress rules in this module.
   # ingress_prefix_list_ids = ["pl-123456"]
   # Open for all CIDRs defined in ingress_cidr_blocks
   ingress_rules = ["https-443-tcp"]
 
-  # Use computed value here (eg, `${module...}`). Plain string is not a real use-case for this argument.
-  computed_ingress_rules           = ["ssh-tcp"]
-  number_of_computed_ingress_rules = 1
-
-  ingress_with_self = [{
-    rule = "all-all"
-  }]
-
-  egress_cidr_blocks = ["0.0.0.0/0"]
-
-  # Prefix list ids to use in all egress rules in this module.
-  # egress_prefix_list_ids = ["pl-123456"]
-  # Open for all CIDRs defined in egress_cidr_blocks
-  egress_rules = ["http-80-tcp"]
-
-  egress_with_self = [{
-    rule = "all-all"
-  }]
-
-  computed_egress_rules           = ["ssh-tcp"]
-  number_of_computed_egress_rules = 1
+  #   # Prefix list ids to use in all egress rules in this module.
+  #   # egress_prefix_list_ids = ["pl-123456"]
+  #   # Open for all CIDRs defined in egress_cidr_blocks
+  egress_rules = ["http-80-tcp", "https-443-tcp"]
 
   tags = {
     Application = var.common_tags["Application"]
