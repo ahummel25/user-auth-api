@@ -24,15 +24,10 @@ module "vpc" {
   enable_nat_gateway = true
   single_nat_gateway = true
 
-  manage_default_security_group = true
-  default_security_group_name   = "${var.name}-${var.env}-security-group-default-not-used"
+  manage_default_security_group  = true
+  default_security_group_name    = "${var.name}-${var.env}-security-group-default-not-used"
   default_security_group_ingress = [{}]
-  default_security_group_egress = [{
-    protocol    = -1
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = "0.0.0.0/0"
-  }]
+  default_security_group_egress  = [{}]
 
   # -- VPC Flow Logs (Cloudwatch log group and IAM role will be created) -- #
   enable_flow_log                                 = true
@@ -65,14 +60,12 @@ module "security_group" {
   ingress_cidr_blocks = [module.vpc.vpc_cidr_block]
 
   # Prefix list ids to use in all ingress rules in this module.
-  # ingress_prefix_list_ids = ["pl-123456"]
   # Open for all CIDRs defined in ingress_cidr_blocks
   ingress_rules = ["https-443-tcp"]
 
-  #   # Prefix list ids to use in all egress rules in this module.
-  #   # egress_prefix_list_ids = ["pl-123456"]
-  #   # Open for all CIDRs defined in egress_cidr_blocks
-  egress_rules = ["http-80-tcp", "https-443-tcp"]
+  # Prefix list ids to use in all egress rules in this module.
+  # Open for all CIDRs defined in egress_cidr_blocks
+  egress_rules = ["all-all"]
 
   tags = {
     Application = var.common_tags["Application"]
