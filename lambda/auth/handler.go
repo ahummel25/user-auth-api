@@ -87,6 +87,7 @@ func LambdaHandler(
 	)
 
 	if response, err = muxAdapter.Proxy(request); err != nil {
+		log.Printf("Proxy Error: %+v\n", err)
 		response = utils.BuildErrorResponse(response, err.Error())
 
 		return response, nil

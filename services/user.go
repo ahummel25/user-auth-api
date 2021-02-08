@@ -100,7 +100,11 @@ func (u *User) AuthenticateUser(email string, password string) (*model.UserObjec
 		userDB userDB
 	)
 
+	log.Printf("In AuthenticateUser")
+
 	ctx, cancelFunc, usersCollection, err := u.getUsersCollection()
+
+	log.Printf("Got users collection")
 
 	defer cancelFunc()
 

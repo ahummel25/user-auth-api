@@ -16,10 +16,10 @@ module "vpc" {
 
   create_database_subnet_group = false
 
-  enable_dns_hostnames = true
-  enable_dns_support   = true
+  enable_dns_hostnames = false
+  enable_dns_support   = false
 
-  enable_ipv6 = true
+  enable_ipv6 = false
 
   enable_nat_gateway     = true
   single_nat_gateway     = true
@@ -52,8 +52,8 @@ module "security_group" {
 
   vpc_id = module.vpc.vpc_id
 
-  #ingress_cidr_blocks = [module.vpc.vpc_cidr_block]
-  ingress_cidr_blocks = ["0.0.0.0/0"]
+  ingress_cidr_blocks = [module.vpc.vpc_cidr_block]
+  #ingress_cidr_blocks = ["0.0.0.0/0"]
 
   # Prefix list ids to use in all ingress rules in this module.
   # ingress_prefix_list_ids = ["pl-123456"]
@@ -73,7 +73,7 @@ module "security_group" {
   # Prefix list ids to use in all egress rules in this module.
   # egress_prefix_list_ids = ["pl-123456"]
   # Open for all CIDRs defined in egress_cidr_blocks
-  egress_rules = ["https-443-tcp"]
+  egress_rules = ["http-80-tcp"]
 
   egress_with_self = [{
     rule = "all-all"
