@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 
 	dbHelper "github.com/src/user-auth-api/db"
@@ -71,26 +70,26 @@ func (u *User) getUsersCollection() (context.Context, func(), *mongo.Collection,
 	db := conn.Database("auth")
 	usersCollection := db.Collection("users")
 
-	if _, err = usersCollection.Indexes().CreateMany(
-		ctx,
-		[]mongo.IndexModel{
-			{
-				Keys: bson.M{
-					"user_id": 1,
-				},
-				Options: options.Index().SetUnique(true),
-			}, {
-				Keys: bson.M{
-					"user_name": 1,
-				},
-				Options: options.Index().SetUnique(true),
-			},
-		},
-	); err != nil {
-		log.Printf("Error creating index on users collection: %v\n", err)
+	// if _, err = usersCollection.Indexes().CreateMany(
+	// 	ctx,
+	// 	[]mongo.IndexModel{
+	// 		{
+	// 			Keys: bson.M{
+	// 				"user_id": 1,
+	// 			},
+	// 			Options: options.Index().SetUnique(true),
+	// 		}, {
+	// 			Keys: bson.M{
+	// 				"user_name": 1,
+	// 			},
+	// 			Options: options.Index().SetUnique(true),
+	// 		},
+	// 	},
+	// ); err != nil {
+	// 	log.Printf("Error creating index on users collection: %v\n", err)
 
-		return nil, nil, nil, errors.New("error connecting to DB")
-	}
+	// 	return nil, nil, nil, errors.New("error connecting to DB")
+	// }
 
 	return ctx, cancelFunc, usersCollection, nil
 }
