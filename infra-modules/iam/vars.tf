@@ -2,7 +2,6 @@ variable "env" {
   type = string
 }
 
-
 variable "api_gateway_logs_role_name" {
   description = "The role name for the API Gateway logs."
   type        = string

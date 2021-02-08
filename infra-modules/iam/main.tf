@@ -3,6 +3,12 @@ resource "aws_iam_role" "assumed_member_role" {
   assume_role_policy = data.aws_iam_policy_document.trust-assume-role-policy.json
 }
 
+resource "aws_iam_role_policy" "assumed_member_role_policy" {
+  name   = format("%s%s", title(var.assumed_member_role_name), "Policy")
+  role   = aws_iam_role.assumed_member_role.id
+  policy = data.aws_iam_policy_document.ec2-permissions-policy.json
+}
+
 resource "aws_iam_role" "lambda_roles" {
   count              = length(var.lambda_role_names)
   name               = var.lambda_role_names[count.index]
