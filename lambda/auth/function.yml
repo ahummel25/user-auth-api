@@ -12,4 +12,4 @@ events:
       method: POST
       path: graphql
 role: "arn:aws:iam::#{AWS::AccountId}:role/${self:custom.commonPrefix}-auth-lambdaRole"
-vpc: ${self:custom.vpc}
+#vpc: ${self:custom.vpc}
