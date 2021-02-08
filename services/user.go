@@ -121,11 +121,11 @@ func (u *User) AuthenticateUser(email string, password string) (*model.UserObjec
 
 	log.Printf("Got users collection")
 
-	defer cancelFunc()
-
 	if err != nil {
 		return nil, err
 	}
+
+	defer cancelFunc()
 
 	filter := bson.M{"email": email}
 
