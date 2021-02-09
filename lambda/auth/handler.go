@@ -106,8 +106,6 @@ func LambdaHandler(
 		return response, nil
 	}
 
-	log.Printf("Proxy Response: %+v\n", response)
-
 	if err = json.Unmarshal([]byte(response.Body), &errorResponse); err != nil {
 		log.Printf("Error unmarshaling response body: %+v\n", err)
 	}
