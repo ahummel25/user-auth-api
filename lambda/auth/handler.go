@@ -114,5 +114,5 @@ func LambdaHandler(
 		response.StatusCode = http.StatusBadRequest
 	}
 
-	return response, err
+	return response, nil
 }
