@@ -93,5 +93,7 @@ func LambdaHandler(
 		return response, nil
 	}
 
+	log.Printf("Proxy Response: %+v\n", response)
+
 	return response, err
 }
