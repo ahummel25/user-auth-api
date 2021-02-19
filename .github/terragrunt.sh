@@ -28,6 +28,6 @@ for module in ${module_dirs[@]}; do
     terragrunt plan
     echo -e "\n"
     
-    terragrunt apply --auto-approve
-    echo -e "\n"
+    #terragrunt apply --auto-approve
+    #echo -e "\n"
 done;

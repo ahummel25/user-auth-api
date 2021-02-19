@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -18,6 +20,16 @@ import (
 	"github.com/src/user-auth-api/services"
 	"github.com/src/user-auth-api/utils"
 )
+
+// ResponseErrorMessage represents the errors contained in a response.
+type ResponseError struct {
+	Errors []ResponseErrorMessage `json:"errors"`
+}
+
+// ResponseErrorMessage represents the error message contained in a response.
+type ResponseErrorMessage struct {
+	Message string `json:"message"`
+}
 
 var muxAdapter *gorillamux.GorillaMuxAdapter
 
@@ -77,8 +89,9 @@ func LambdaHandler(
 	request events.APIGatewayProxyRequest,
 ) (events.APIGatewayProxyResponse, error) {
 	var (
-		err      error
-		response = events.APIGatewayProxyResponse{
+		err           error
+		errorResponse ResponseError
+		response      = events.APIGatewayProxyResponse{
 			Headers: map[string]string{
 				"Content-Type": "application/json",
 			},
@@ -93,5 +106,13 @@ func LambdaHandler(
 		return response, nil
 	}
 
-	return response, err
+	if err = json.Unmarshal([]byte(response.Body), &errorResponse); err != nil {
+		log.Printf("Error unmarshaling response body: %+v\n", err)
+	}
+
+	if len(errorResponse.Errors) > 0 {
+		response.StatusCode = http.StatusBadRequest
+	}
+
+	return response, nil
 }

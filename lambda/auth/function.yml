@@ -13,4 +13,4 @@ events:
       path: graphql
 role: "arn:aws:iam::#{AWS::AccountId}:role/${self:custom.commonPrefix}-auth-lambdaRole"
 timeout: 30
-vpc: ${self:custom.vpc}
+#vpc: ${self:custom.vpc}
