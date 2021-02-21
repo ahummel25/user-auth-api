@@ -12,7 +12,11 @@ node_modules
 # Terraform/Terragrunt
 .terraform*
 terraform.tfstate*
-.terragrunt*
+infra/aws-infra-live/**/.terragrunt-cache/
+infra/mongo-infra-live/**/.terragrunt-cache/**/iam
+infra/mongo-infra-live/**/.terragrunt-cache/**/ssm
+infra/mongo-infra-live/**/.terragrunt-cache/**/vpc
+infra/mongo-infra-live/**/.terragrunt-cache/**/.terragrunt*
 
 # golang output binary directory
 bin
