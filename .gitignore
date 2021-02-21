@@ -17,6 +17,8 @@ infra/mongo-infra-live/**/.terragrunt-cache/**/iam
 infra/mongo-infra-live/**/.terragrunt-cache/**/ssm
 infra/mongo-infra-live/**/.terragrunt-cache/**/vpc
 infra/mongo-infra-live/**/.terragrunt-cache/**/.terragrunt*
+!infra/mongo-infra-live/**/.terragrunt-cache/**/mongo/*
+infra/mongo-infra-live/**/.terragrunt-cache/**/mongo/**/providers
 
 # golang output binary directory
 bin
