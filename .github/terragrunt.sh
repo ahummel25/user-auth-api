@@ -9,9 +9,9 @@ TERRAGRUNT_LIVE_DIRS=()
 
 # If prod, no sub directory exists. If non-prod, it does.
 if [ $ENV == "prod" ]; then
-    TERRAGRUNT_LIVE_DIRS=("infra/aws-infra-live/$ENV/us-east-1" "infra/mongo-infra-live/$ENV")
+    TERRAGRUNT_LIVE_DIRS=("infra/aws-infra-live/$ENV/us-east-1" "infra/mongo-infra-live/us-east-1/$ENV")
 else
-    TERRAGRUNT_LIVE_DIRS=("infra/aws-infra-live/non-prod/us-east-1/$ENV" "infra/mongo-infra-live/non-prod/$ENV")
+    TERRAGRUNT_LIVE_DIRS=("infra/aws-infra-live/non-prod/us-east-1/$ENV" "infra/mongo-infra-live/non-prod/us-east-1/$ENV")
 fi
 
 terragrunt --version
