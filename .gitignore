@@ -11,15 +11,8 @@ node_modules
 
 # Terraform/Terragrunt
 .terraform*
-!infra/mongo-infra-live/**/.terraform.lock.hcl
 terraform.tfstate*
-infra/aws-infra-live/**/.terragrunt-cache/
-infra/mongo-infra-live/**/.terragrunt-cache/**/iam
-infra/mongo-infra-live/**/.terragrunt-cache/**/ssm
-infra/mongo-infra-live/**/.terragrunt-cache/**/vpc
-infra/mongo-infra-live/**/.terragrunt-cache/**/.terragrunt*
-!infra/mongo-infra-live/**/.terragrunt-cache/**/mongo/*
-infra/mongo-infra-live/**/.terragrunt-cache/**/mongo/**/providers
+.terragrunt*
 
 # golang output binary directory
 bin

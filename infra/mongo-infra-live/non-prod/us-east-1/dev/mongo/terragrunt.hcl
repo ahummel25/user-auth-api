@@ -7,7 +7,7 @@ locals {
 }
 
 terraform {
-  source = "../../../../infra-modules//mongo"
+  source = "../../../../../infra-modules//mongo"
 }
 
 # Include all settings from the root terragrunt.hcl file
