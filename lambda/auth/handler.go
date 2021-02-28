@@ -110,9 +110,7 @@ func LambdaHandler(
 	}
 
 	response.Headers = map[string]string{
-		"Access-Control-Allow-Origin":      "*",
-		"Access-Control-Allow-Credentials": "true",
-		"Content-Type":                     "application/json",
+		"Content-Type": "application/json",
 	}
 	response.IsBase64Encoded = false
 
