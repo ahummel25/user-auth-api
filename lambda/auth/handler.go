@@ -91,14 +91,7 @@ func LambdaHandler(
 	var (
 		err           error
 		errorResponse ResponseError
-		response      = events.APIGatewayProxyResponse{
-			Headers: map[string]string{
-				"Access-Control-Allow-Origin":      "*",
-				"Access-Control-Allow-Credentials": "true",
-				"Content-Type":                     "application/json",
-			},
-			IsBase64Encoded: false,
-		}
+		response      events.APIGatewayProxyResponse
 	)
 
 	if response, err = muxAdapter.Proxy(request); err != nil {
@@ -108,8 +101,6 @@ func LambdaHandler(
 		return response, nil
 	}
 
-	log.Printf("Lambda response headers: %+v\n", response.Headers)
-
 	if err = json.Unmarshal([]byte(response.Body), &errorResponse); err != nil {
 		log.Printf("Error unmarshaling response body: %+v\n", err)
 	}
@@ -117,6 +108,13 @@ func LambdaHandler(
 	if len(errorResponse.Errors) > 0 {
 		response.StatusCode = http.StatusBadRequest
 	}
+
+	response.Headers = map[string]string{
+		"Access-Control-Allow-Origin":      "*",
+		"Access-Control-Allow-Credentials": "true",
+		"Content-Type":                     "application/json",
+	}
+	response.IsBase64Encoded = false
 
 	return response, nil
 }
