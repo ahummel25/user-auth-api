@@ -108,6 +108,8 @@ func LambdaHandler(
 		return response, nil
 	}
 
+	log.Printf("Lambda response headers: %+v\n", response.Headers)
+
 	if err = json.Unmarshal([]byte(response.Body), &errorResponse); err != nil {
 		log.Printf("Error unmarshaling response body: %+v\n", err)
 	}
