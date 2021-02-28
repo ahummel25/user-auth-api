@@ -93,7 +93,9 @@ func LambdaHandler(
 		errorResponse ResponseError
 		response      = events.APIGatewayProxyResponse{
 			Headers: map[string]string{
-				"Content-Type": "application/json",
+				"Access-Control-Allow-Origin":      "*",
+				"Access-Control-Allow-Credentials": "true",
+				"Content-Type":                     "application/json",
 			},
 			IsBase64Encoded: false,
 		}
