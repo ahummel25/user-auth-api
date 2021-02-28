@@ -18,7 +18,7 @@ import (
 
 // UserService contains signatures for any auth functions.
 type UserService interface {
-	AuthenticateUser(email string, password string) (*model.UserObject, error)
+	AuthenticateUser(username string, password string) (*model.UserObject, error)
 	CreateUser(params model.CreateUserInput) (*model.UserObject, error)
 	DeleteUser(params model.DeleteUserInput) (string, error)
 }
@@ -94,7 +94,7 @@ func (u *User) getUsersCollection() (context.Context, func(), *mongo.Collection,
 }
 
 // AuthenticateUser authenticates the user.
-func (u *User) AuthenticateUser(email string, password string) (*model.UserObject, error) {
+func (u *User) AuthenticateUser(username string, password string) (*model.UserObject, error) {
 	var (
 		err    error
 		userDB userDB
@@ -108,7 +108,7 @@ func (u *User) AuthenticateUser(email string, password string) (*model.UserObjec
 		return nil, err
 	}
 
-	filter := bson.M{"email": email}
+	filter := bson.M{"user_name": username}
 
 	if err = usersCollection.FindOne(ctx, filter).Decode(&userDB); err != nil {
 		log.Printf("Error while finding user: %v\n", err)

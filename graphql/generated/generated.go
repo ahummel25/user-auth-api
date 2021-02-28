@@ -233,7 +233,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var sources = []*ast.Source{
 	{Name: "graphql/schema/auth.graphql", Input: `input AuthParams {
-  email: String!
+  username: String!
   password: String!
 }
 `, BuiltIn: false},
@@ -1975,11 +1975,11 @@ func (ec *executionContext) unmarshalInputAuthParams(ctx context.Context, obj in
 
 	for k, v := range asMap {
 		switch k {
-		case "email":
+		case "username":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
-			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("username"))
+			it.Username, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}

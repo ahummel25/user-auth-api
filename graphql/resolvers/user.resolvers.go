@@ -18,5 +18,5 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, params model.DeleteUs
 }
 
 func (r *queryResolver) AuthenticateUser(ctx context.Context, params model.AuthParams) (*model.UserObject, error) {
-	return r.UserService.AuthenticateUser(params.Email, params.Password)
+	return r.UserService.AuthenticateUser(params.Username, params.Password)
 }

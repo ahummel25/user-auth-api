@@ -65,8 +65,8 @@ func setup() {
 
 func TestQueryResolver_AuthenticateUser(t *testing.T) {
 	q := `
-	query DoLogin ($email: String!, $password: String!) { 
-	  authenticateUser(params: {email: $email, password: $password}) {
+	query DoLogin ($username: String!, $password: String!) { 
+	  authenticateUser(params: {username: $username, password: $password}) {
 		user {
 		  firstName
 		  lastName
@@ -100,13 +100,13 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 
 		c.MustPost(
 			q, &mockUserLoginResponse,
-			client.Var("email", mockEmail),
+			client.Var("username", mockUserName),
 			client.Var("password", mockPassword),
 		)
 
 		testAuthService.AssertExpectations(t)
 		testAuthService.AssertNumberOfCalls(t, "AuthenticateUser", 1)
-		testAuthService.AssertCalled(t, "AuthenticateUser", mockEmail, mockPassword)
+		testAuthService.AssertCalled(t, "AuthenticateUser", mockUserName, mockPassword)
 
 		require.Equal(t, mockUserID, mockUserLoginResponse.AuthenticateUser.User.UserID)
 		require.Equal(t, mockFirstName, mockUserLoginResponse.AuthenticateUser.User.FirstName)
@@ -130,13 +130,13 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 
 		err := c.Post(
 			q, &mockUserLoginResponse,
-			client.Var("email", mockEmail),
+			client.Var("username", mockUserName),
 			client.Var("password", mockPassword),
 		)
 
 		testAuthService.AssertExpectations(t)
 		testAuthService.AssertNumberOfCalls(t, "AuthenticateUser", 1)
-		testAuthService.AssertCalled(t, "AuthenticateUser", mockEmail, mockPassword)
+		testAuthService.AssertCalled(t, "AuthenticateUser", mockUserName, mockPassword)
 
 		require.Empty(t, mockUserLoginResponse)
 		require.EqualError(t, err, `[{"message":"`+errNoUserFound.Error()+`","path":["authenticateUser"]}]`)
@@ -157,13 +157,13 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 
 		err := c.Post(
 			q, &mockUserLoginResponse,
-			client.Var("email", mockEmail),
+			client.Var("username", mockUserName),
 			client.Var("password", mockPassword),
 		)
 
 		testAuthService.AssertExpectations(t)
 		testAuthService.AssertNumberOfCalls(t, "AuthenticateUser", 1)
-		testAuthService.AssertCalled(t, "AuthenticateUser", mockEmail, mockPassword)
+		testAuthService.AssertCalled(t, "AuthenticateUser", mockUserName, mockPassword)
 
 		require.Empty(t, mockUserLoginResponse)
 		require.EqualError(t, err, `[{"message":"`+errInvalidPassword.Error()+`","path":["authenticateUser"]}]`)
