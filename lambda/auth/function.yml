@@ -2,15 +2,16 @@ handler: my.bootstrap.file
 package:
   artifact: ./build/packages/auth.zip
 environment:
-   ENV: ${self:provider.stage}
-   MONGODB_URI: ${ssm:/user-auth-api/${self:provider.stage}/MONGODB_URI~true}
+  ENV: ${self:provider.stage}
+  MONGODB_URI: ${ssm:/user-auth-api/${self:provider.stage}/MONGODB_URI~true}
 events:
   - http:
       method: GET
       path: graphiql
   - http:
+      cors: true
       method: POST
       path: graphql
-role: "arn:aws:iam::#{AWS::AccountId}:role/${self:custom.commonPrefix}-auth-lambdaRole"
+role: 'arn:aws:iam::#{AWS::AccountId}:role/${self:custom.commonPrefix}-auth-lambdaRole'
 timeout: 30
 #vpc: ${self:custom.vpc}
