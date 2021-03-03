@@ -14,11 +14,16 @@ type AuthParams struct {
 }
 
 type CreateUserInput struct {
-	Email     string `json:"email"`
+	// The user's e-mail address
+	Email string `json:"email"`
+	// The user's first name
 	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	UserName  string `json:"userName"`
-	Password  string `json:"password"`
+	// The user's last name'
+	LastName string `json:"lastName"`
+	// The user's username'
+	UserName string `json:"userName"`
+	// The user's password'
+	Password string `json:"password"`
 }
 
 type DeleteUserInput struct {
