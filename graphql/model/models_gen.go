@@ -18,28 +18,38 @@ type CreateUserInput struct {
 	Email string `json:"email"`
 	// The user's first name
 	FirstName string `json:"firstName"`
-	// The user's last name'
+	// The user's last name
 	LastName string `json:"lastName"`
-	// The user's username'
+	// The user's username
 	UserName string `json:"userName"`
 	// The user's password'
 	Password string `json:"password"`
 }
 
 type DeleteUserInput struct {
-	UserID    string `json:"userID"`
-	Email     string `json:"email"`
+	// The user's unique user ID
+	UserID string `json:"userID"`
+	// The user's e-mail address
+	Email string `json:"email"`
+	// The user's first name
 	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	UserName  string `json:"userName"`
+	// The user's last name
+	LastName string `json:"lastName"`
+	// The user's username
+	UserName string `json:"userName"`
 }
 
 type User struct {
-	UserID    string `json:"userID"`
-	Email     string `json:"email"`
+	// The user's unique user ID
+	UserID string `json:"userID"`
+	// The user's e-mail address
+	Email string `json:"email"`
+	// The user's first name
 	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	UserName  string `json:"userName"`
+	// The user's last name
+	LastName string `json:"lastName"`
+	// The user's username
+	UserName string `json:"userName"`
 }
 
 type UserObject struct {
@@ -90,8 +100,10 @@ func (e Action) MarshalGQL(w io.Writer) {
 type Role string
 
 const (
+	// ADMIN Role
 	RoleAdmin Role = "ADMIN"
-	RoleUser  Role = "USER"
+	// USER Role
+	RoleUser Role = "USER"
 )
 
 var AllRole = []Role{

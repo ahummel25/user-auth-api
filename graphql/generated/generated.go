@@ -249,7 +249,9 @@ enum Action {
 }
 
 enum Role {
+  "ADMIN Role"
   ADMIN
+  "USER Role"
   USER
 }
 
@@ -265,10 +267,15 @@ type Mutation {
 }
 
 type User {
+  "The user's unique user ID"
   userID: ID!
+  "The user's e-mail address"
   email: String!
+  "The user's first name"
   firstName: String!
+  "The user's last name"
   lastName: String!
+  "The user's username"
   userName: String!
 }
 
@@ -281,19 +288,24 @@ input CreateUserInput {
   email: String!
   "The user's first name"
   firstName: String!
-  "The user's last name'"
+  "The user's last name"
   lastName: String!
-  "The user's username'"
+  "The user's username"
   userName: String!
   "The user's password'"
   password: String!
 }
 
 input DeleteUserInput {
+  "The user's unique user ID"
   userID: ID!
+  "The user's e-mail address"
   email: String!
+  "The user's first name"
   firstName: String!
+  "The user's last name"
   lastName: String!
+  "The user's username"
   userName: String!
 }
 `, BuiltIn: false},
