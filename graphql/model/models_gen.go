@@ -8,11 +8,15 @@ import (
 	"strconv"
 )
 
+// The input needed to authenticate a user.
 type AuthParams struct {
+	// The user's username'
 	Username string `json:"username"`
+	// The user's password'
 	Password string `json:"password"`
 }
 
+// The input required to create a new user.
 type CreateUserInput struct {
 	// The user's e-mail address
 	Email string `json:"email"`
@@ -26,6 +30,7 @@ type CreateUserInput struct {
 	Password string `json:"password"`
 }
 
+// The input required to delete an existing user.
 type DeleteUserInput struct {
 	// The user's unique user ID
 	UserID string `json:"userID"`
@@ -39,6 +44,7 @@ type DeleteUserInput struct {
 	UserName string `json:"userName"`
 }
 
+// An object representing an individual user.
 type User struct {
 	// The user's unique user ID
 	UserID string `json:"userID"`

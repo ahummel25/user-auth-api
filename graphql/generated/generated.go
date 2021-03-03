@@ -232,8 +232,11 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "graphql/schema/auth.graphql", Input: `input AuthParams {
+	{Name: "graphql/schema/auth.graphql", Input: `"The input needed to authenticate a user."
+input AuthParams {
+  "The user's username'"
   username: String!
+  "The user's password'"
   password: String!
 }
 `, BuiltIn: false},
@@ -271,6 +274,7 @@ type Mutation {
     @hasRole(role: ADMIN, action: DELETE_USER)
 }
 
+"An object representing an individual user."
 type User {
   "The user's unique user ID"
   userID: ID!
@@ -289,6 +293,7 @@ type UserObject {
   user: User!
 }
 
+"The input required to create a new user."
 input CreateUserInput {
   "The user's e-mail address"
   email: String!
@@ -302,6 +307,7 @@ input CreateUserInput {
   password: String!
 }
 
+"The input required to delete an existing user."
 input DeleteUserInput {
   "The user's unique user ID"
   userID: ID!

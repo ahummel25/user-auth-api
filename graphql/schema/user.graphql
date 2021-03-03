@@ -32,6 +32,7 @@ type Mutation {
     @hasRole(role: ADMIN, action: DELETE_USER)
 }
 
+"An object representing an individual user."
 type User {
   "The user's unique user ID"
   userID: ID!
@@ -50,6 +51,7 @@ type UserObject {
   user: User!
 }
 
+"The input required to create a new user."
 input CreateUserInput {
   "The user's e-mail address"
   email: String!
@@ -63,6 +65,7 @@ input CreateUserInput {
   password: String!
 }
 
+"The input required to delete an existing user."
 input DeleteUserInput {
   "The user's unique user ID"
   userID: ID!
