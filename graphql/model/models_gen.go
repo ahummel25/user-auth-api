@@ -53,13 +53,16 @@ type User struct {
 }
 
 type UserObject struct {
+	// The user object pertaining to the given user.
 	User *User `json:"user"`
 }
 
 type Action string
 
 const (
+	// Create User Action
 	ActionCreateUser Action = "CREATE_USER"
+	// Delete User Action
 	ActionDeleteUser Action = "DELETE_USER"
 )
 

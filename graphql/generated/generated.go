@@ -244,7 +244,9 @@ var sources = []*ast.Source{
 directive @hasRole(role: Role!, action: Action!) on FIELD_DEFINITION
 
 enum Action {
+  "Create User Action"
   CREATE_USER
+  "Delete User Action"
   DELETE_USER
 }
 
@@ -256,12 +258,15 @@ enum Role {
 }
 
 type Query {
+  "Query to handle a user login request."
   authenticateUser(params: AuthParams!): UserObject!
 }
 
 type Mutation {
+  "Mutation to handle a new user creation request."
   createUser(user: CreateUserInput!): UserObject!
     @hasRole(role: ADMIN, action: CREATE_USER)
+  "Mutation to handle an existing user deletion request."
   deleteUser(user: DeleteUserInput!): String!
     @hasRole(role: ADMIN, action: DELETE_USER)
 }
@@ -280,6 +285,7 @@ type User {
 }
 
 type UserObject {
+  "The user object pertaining to the given user."
   user: User!
 }
 
