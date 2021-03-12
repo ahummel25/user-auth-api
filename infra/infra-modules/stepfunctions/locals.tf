@@ -21,7 +21,7 @@ locals {
         ],
         "ServiceRole": "EMR_DefaultRole",
         "JobFlowRole": "EMR_EC2_DefaultRole",
-        "LogUri": "s3://stepfunctions-emrproject-${data.aws_caller_identity.current.account_id}/logs/",
+        "LogUri": "s3://step-functions-emr-${data.aws_caller_identity.current.account_id}/logs/",
         "Instances": {
 		  "Ec2SubnetId": "subnet-0452c6fa90d83fcca",	
           "KeepJobFlowAliveWhenNoSteps": true,
@@ -62,7 +62,7 @@ locals {
           "ActionOnFailure": "TERMINATE_CLUSTER",
           "HadoopJarStep": {
             "Jar": "command-runner.jar",
-			"Args": ["spark-submit", "--deploy-mode", "cluster", "--class", "org.ussoccer.analytics.dw.DMAData", "s3://emr-spark-runners/libs/dw/dw-assembly-2.0.0.jar"]
+			"Args": ["spark-submit", "--deploy-mode", "cluster", "--class", "org.ussoccer.analytics.dw.DMAData", "s3://step-functions-emr-${data.aws_caller_identity.current.account_id}/libs/spark/dw-assembly-2.0.0.jar"]
           }
         }
       },

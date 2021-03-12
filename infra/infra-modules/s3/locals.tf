@@ -1,3 +1,3 @@
 locals {
-  bucket_name = "stepfunctions-emrproject-${data.aws_caller_identity.current.account_id}"
+  bucket_name = "step-functions-emr-${data.aws_caller_identity.current.account_id}"
 }
