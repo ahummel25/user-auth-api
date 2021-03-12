@@ -61,7 +61,7 @@ input CreateUserInput {
   lastName: String!
   "The user's username"
   userName: String!
-  "The user's password'"
+  "The user's password"
   password: String!
 }
 
