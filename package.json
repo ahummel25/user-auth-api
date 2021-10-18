@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/ahummel25/user-auth-api#readme",
   "devDependencies": {
-    "serverless-pseudo-parameters": "^2.5.0"
+    "serverless-pseudo-parameters": "2.6.1"
   }
 }
