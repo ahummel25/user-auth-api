@@ -2,8 +2,11 @@
 
 Reference the `serverless.yml` file in the root of the project. This is the main file used for deploying the serverless application.
 
-## Install Go 
+## Install Go
 - https://go.dev/doc/install
+
+## Install Serverless
+- https://www.serverless.com/framework/docs/getting-started
 
 ## Setup
 
