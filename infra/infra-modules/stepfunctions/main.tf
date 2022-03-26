@@ -22,11 +22,13 @@ module "step_function" {
         },
         {
             "Action": [
+				"cloudwatch:*",
                 "elasticmapreduce:RunJobFlow",
                 "elasticmapreduce:TerminateJobFlows",
                 "elasticmapreduce:DescribeCluster",
                 "elasticmapreduce:AddJobFlowSteps",
-                "elasticmapreduce:DescribeStep"
+                "elasticmapreduce:DescribeStep",
+				"logs:*"
             ],
             "Resource": "*",
             "Effect": "Allow"

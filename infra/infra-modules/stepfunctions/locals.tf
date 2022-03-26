@@ -58,7 +58,7 @@ locals {
       "Parameters": {
         "ClusterId.$": "$.cluster.ClusterId",
         "Step": {
-          "Name": "My first EMR step",
+          "Name": "Run DMA job",
           "ActionOnFailure": "TERMINATE_CLUSTER",
           "HadoopJarStep": {
             "Jar": "command-runner.jar",
