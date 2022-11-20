@@ -1,6 +1,6 @@
 module github.com/src/user-auth-api
 
-go 1.15
+go 1.19
 
 require (
 	github.com/99designs/gqlgen v0.13.0
