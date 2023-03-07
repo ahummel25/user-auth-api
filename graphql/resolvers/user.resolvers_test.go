@@ -54,13 +54,13 @@ var (
 	mockDeleteUserResponse struct {
 		DeleteUser string
 	}
-	mockResolvers   resolvers.Resolvers
+	mockResolvers   resolvers.Services
 	testAuthService *mocks.MockedUserService
 )
 
 func setup() {
 	testAuthService = new(mocks.MockedUserService)
-	mockResolvers = resolvers.Resolvers{UserService: testAuthService}
+	mockResolvers = resolvers.Services{UserService: testAuthService}
 }
 
 func TestQueryResolver_AuthenticateUser(t *testing.T) {

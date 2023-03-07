@@ -18,12 +18,17 @@ import (
 
 // UserService contains signatures for any auth functions.
 type UserService interface {
-	AuthenticateUser(username string, password string) (*model.UserObject, error)
+	AuthenticateUser(ctx context.Context, username string, password string) (*model.UserObject, error)
 	CreateUser(params model.CreateUserInput) (*model.UserObject, error)
 	DeleteUser(params model.DeleteUserInput) (string, error)
 }
 
 type User struct{}
+
+var (
+	conn            *mongo.Client
+	usersCollection *mongo.Collection
+)
 
 var (
 	errInvalidPassword       = errors.New("invalid password")
@@ -45,29 +50,33 @@ func NewUserService() *User {
 	return &User{}
 }
 
-func (u *User) getUsersCollection() (context.Context, func(), *mongo.Collection, error) {
+func (u *User) getUsersCollection() (context.Context, *mongo.Collection, error) {
 	var (
-		cancel context.CancelFunc
-		conn   *mongo.Client
-		ctx    context.Context
-		err    error
+		// cancel context.CancelFunc
+		ctx context.Context
+		err error
 	)
 
-	if conn, ctx, cancel, err = dbHelper.GetDBConnection(); err != nil {
+	if conn != nil && usersCollection != nil {
+		log.Println("Connection and collection are already active!")
+		return ctx, usersCollection, nil
+	}
+
+	if conn, ctx, _, err = dbHelper.GetDBConnection(); err != nil {
 		log.Printf("Error connecting to MongoDB: %v\n", err)
 
-		return nil, nil, nil, errors.New("error connecting to DB")
+		return nil, nil, errors.New("error connecting to DB")
 	}
 
-	cancelFunc := func() {
-		if err = conn.Disconnect(ctx); err != nil {
-			log.Printf("Error disconnecting from MongoDB: %v\n", err)
-		}
-		cancel()
-	}
+	// cancelFunc := func() {
+	// 	if err = conn.Disconnect(ctx); err != nil {
+	// 		log.Printf("Error disconnecting from MongoDB: %v\n", err)
+	// 	}
+	// 	cancel()
+	// }
 
 	db := conn.Database("auth")
-	usersCollection := db.Collection("users")
+	usersCollection = db.Collection("users")
 
 	if _, err = usersCollection.Indexes().CreateMany(
 		ctx,
@@ -87,22 +96,22 @@ func (u *User) getUsersCollection() (context.Context, func(), *mongo.Collection,
 	); err != nil {
 		log.Printf("Error creating index on users collection: %v\n", err)
 
-		return nil, nil, nil, errors.New("error connecting to DB")
+		return nil, nil, errors.New("error connecting to DB")
 	}
 
-	return ctx, cancelFunc, usersCollection, nil
+	return ctx, usersCollection, nil
 }
 
 // AuthenticateUser authenticates the user.
-func (u *User) AuthenticateUser(username string, password string) (*model.UserObject, error) {
+func (u *User) AuthenticateUser(ctx context.Context, username string, password string) (*model.UserObject, error) {
 	var (
 		err    error
 		userDB userDB
 	)
 
-	ctx, cancelFunc, usersCollection, err := u.getUsersCollection()
+	_, usersCollection, err := u.getUsersCollection()
 
-	defer cancelFunc()
+	// d := ctx.Value("DB")
 
 	if err != nil {
 		return nil, err
@@ -151,9 +160,9 @@ func (u *User) CreateUser(params model.CreateUserInput) (*model.UserObject, erro
 		userCount int64
 	)
 
-	ctx, cancelFunc, usersCollection, err := u.getUsersCollection()
+	ctx, usersCollection, err := u.getUsersCollection()
 
-	defer cancelFunc()
+	// defer cancelFunc()
 
 	if err != nil {
 		return nil, err
@@ -221,9 +230,9 @@ func (u *User) DeleteUser(params model.DeleteUserInput) (string, error) {
 		err          error
 	)
 
-	ctx, cancelFunc, usersCollection, err := u.getUsersCollection()
+	ctx, usersCollection, err := u.getUsersCollection()
 
-	defer cancelFunc()
+	// defer cancelFunc()
 
 	if err != nil {
 		return "", err

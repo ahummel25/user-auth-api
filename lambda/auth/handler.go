@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +11,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/awslabs/aws-lambda-go-api-proxy/core"
 	"github.com/awslabs/aws-lambda-go-api-proxy/gorillamux"
 	"github.com/gorilla/mux"
 
@@ -21,21 +22,11 @@ import (
 	"github.com/src/user-auth-api/utils"
 )
 
-// ResponseErrorMessage represents the errors contained in a response.
-type ResponseError struct {
-	Errors []ResponseErrorMessage `json:"errors"`
-}
-
-// ResponseErrorMessage represents the error message contained in a response.
-type ResponseErrorMessage struct {
-	Message string `json:"message"`
-}
-
 var muxAdapter *gorillamux.GorillaMuxAdapter
 
-/*func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "public/404.html")
-}*/
+}
 
 func init() {
 	r := mux.NewRouter()
@@ -43,7 +34,7 @@ func init() {
 
 	userService := services.NewUserService()
 
-	initResolvers := resolvers.Resolvers{
+	initResolvers := resolvers.Services{
 		UserService: userService,
 	}
 
@@ -58,10 +49,8 @@ func init() {
 				switch action.String() {
 				case model.ActionCreateUser.String():
 					log.Printf("%+v\n", fc["user"].(model.CreateUserInput).Email)
-					break
 				case model.ActionDeleteUser.String():
 					log.Printf("%+v\n", fc["user"].(model.DeleteUserInput).Email)
-					break
 				}
 
 				return next(ctx)
@@ -73,12 +62,9 @@ func init() {
 	schema := generated.NewExecutableSchema(c)
 	server := handler.NewDefaultServer(schema)
 
-	if env != "prod" {
-		r.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))
-	}
-
+	r.Handle("/graphiql", playground.Handler("GraphQL playground", fmt.Sprintf("/%s/graphql", env)))
 	r.Handle("/graphql", server)
-	// r.NotFoundHandler = http.HandlerFunc(notFoundHandler)
+	r.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 
 	muxAdapter = gorillamux.New(r)
 }
@@ -89,32 +75,28 @@ func LambdaHandler(
 	request events.APIGatewayProxyRequest,
 ) (events.APIGatewayProxyResponse, error) {
 	var (
-		err           error
-		errorResponse ResponseError
-		response      events.APIGatewayProxyResponse
+		err      error
+		response *core.SwitchableAPIGatewayResponse
 	)
 
-	if response, err = muxAdapter.Proxy(request); err != nil {
+	newCtx := context.WithValue(ctx, "DB", "Connection")
+
+	if response, err = muxAdapter.ProxyWithContext(newCtx, *core.NewSwitchableAPIGatewayRequestV1(&request)); err != nil {
 		log.Printf("Proxy Error: %+v\n", err)
-		response = utils.BuildErrorResponse(response, err.Error())
+		*response.Version1() = utils.BuildErrorResponse(*response.Version1(), err.Error())
 
-		return response, nil
+		return *response.Version1(), nil
 	}
 
-	if err = json.Unmarshal([]byte(response.Body), &errorResponse); err != nil {
-		log.Printf("Error unmarshaling response body: %+v\n", err)
-	}
+	apiGWResponse := response.Version1()
 
-	if len(errorResponse.Errors) > 0 {
-		response.StatusCode = http.StatusBadRequest
-	}
-
-	response.Headers = map[string]string{
+	apiGWResponse.Headers = map[string]string{
 		"Access-Control-Allow-Origin":      "*",
 		"Access-Control-Allow-Credentials": "true",
 		"Content-Type":                     "application/json",
 	}
-	response.IsBase64Encoded = false
+	apiGWResponse.IsBase64Encoded = false
+	apiGWResponse.StatusCode = http.StatusOK
 
-	return response, nil
+	return *apiGWResponse, nil
 }

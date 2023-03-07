@@ -1,8 +1,5 @@
 package resolvers
 
-// This file will be automatically regenerated based on the schema, any resolver implementations
-// will be copied through when generating and any unknown code will be moved to the end.
-
 import (
 	"context"
 
@@ -18,5 +15,5 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, params model.DeleteUs
 }
 
 func (r *queryResolver) AuthenticateUser(ctx context.Context, params model.AuthParams) (*model.UserObject, error) {
-	return r.UserService.AuthenticateUser(params.Username, params.Password)
+	return r.UserService.AuthenticateUser(ctx, params.Username, params.Password)
 }

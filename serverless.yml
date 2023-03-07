@@ -2,37 +2,34 @@ service: user-auth-api
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
-frameworkVersion: '>=2.8.0'
-
-plugins:
-  - serverless-pseudo-parameters
+frameworkVersion: '>=3.0.0'
 
 custom:
-  commonPrefix: ${self:service.name}-${self:provider.stage}
-  vpc: ${file(./${self:provider.stage}.yml):vpc}
+    commonPrefix: ${self:service}-${self:provider.stage}
+    vpc: ${file(./${self:provider.stage}.yml):vpc}
 
 provider:
-  name: aws
-  runtime: provided.al2
-  versionFunctions: false
-  tracing:
-    apiGateway: true
-    lambda: true
-  apiGateway:
-    shouldStartNameWithService: true  
-  logs:
-    restApi:
-      accessLogging: true
-      executionLogging: true
-      role: 'arn:aws:iam::#{AWS::AccountId}:role/${self:custom.commonPrefix}-apigw-role'
-      roleManagedExternally: true
-  stage: ${opt:stage, 'dev'}
-  timeout: 10
+    name: aws
+    runtime: provided.al2
+    versionFunctions: false
+    tracing:
+        apiGateway: true
+        lambda: true
+    apiGateway:
+        shouldStartNameWithService: true
+    logs:
+        restApi:
+            accessLogging: true
+            executionLogging: true
+            role: 'arn:aws:iam::${aws:accountId}:role/${self:custom.commonPrefix}-apigw-role'
+            roleManagedExternally: true
+    stage: ${opt:stage, 'dev'}
+    timeout: 10
 
 package:
-  exclude:
-    - ./**
-  individually: true
+    exclude:
+        - ./**
+    individually: true
 
 functions:
-  auth: ${file(lambda/auth/function.yml)}
+    auth: ${file(lambda/auth/function.yml)}

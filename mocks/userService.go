@@ -1,6 +1,7 @@
 package mocks
 
 import (
+	"context"
 	"errors"
 
 	"github.com/src/user-auth-api/graphql/model"
@@ -22,7 +23,7 @@ var (
 )
 
 // AuthenticateUser mocks the user authentication function.
-func (s *MockedUserService) AuthenticateUser(username string, password string) (*model.UserObject, error) {
+func (s *MockedUserService) AuthenticateUser(ctx context.Context, username string, password string) (*model.UserObject, error) {
 	args := s.Called(username, password)
 
 	if s.ErrorInvalidPassword {

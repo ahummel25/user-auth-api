@@ -31,7 +31,7 @@ func main() {
 
 	userService := services.NewUserService()
 
-	resolvers := resolvers.Resolvers{
+	resolvers := resolvers.Services{
 		UserService: userService,
 	}
 

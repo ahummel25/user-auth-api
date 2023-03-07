@@ -1,5 +1,5 @@
-BUILD_PREFIX          = env GOARCH=amd64 GOOS=linux CGO_ENABLED=1 go build
-COMMON_LDFLAGS        = "-linkmode external -extldflags -static -s -w"
+BUILD_PREFIX          = env GOOS=linux GOARCH=amd64 go build
+COMMON_LDFLAGS        = "-s -w"
 
 .PHONY: build clean deploy gomodgen
 

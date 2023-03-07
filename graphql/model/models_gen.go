@@ -10,9 +10,9 @@ import (
 
 // The input needed to authenticate a user.
 type AuthParams struct {
-	// The user's username'
+	// The user's username
 	Username string `json:"username"`
-	// The user's password'
+	// The user's password
 	Password string `json:"password"`
 }
 
@@ -26,7 +26,7 @@ type CreateUserInput struct {
 	LastName string `json:"lastName"`
 	// The user's username
 	UserName string `json:"userName"`
-	// The user's password'
+	// The user's password
 	Password string `json:"password"`
 }
 
