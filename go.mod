@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/99designs/gqlgen v0.17.25
-	github.com/aws/aws-lambda-go v1.22.0
+	github.com/aws/aws-lambda-go v1.38.0
 	github.com/awslabs/aws-lambda-go-api-proxy v0.14.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
