@@ -2,7 +2,7 @@ terraform {
   required_providers {
     mongodbatlas = {
       source  = "mongodb/mongodbatlas"
-      version = "0.8.2"
+      version = "1.8.1"
     }
   }
 }
@@ -30,7 +30,7 @@ module "atlas_cluster" {
   cluster_name = "UserAuthMongoCluster${local.env}"
 
   instance_type     = "M0"
-  mongodb_major_ver = 4.4
+  mongodb_major_ver = 5.0
   cluster_type      = "REPLICASET"
   num_shards        = 1
   provider_backup   = true

@@ -23,6 +23,7 @@ provider:
             executionLogging: true
             role: 'arn:aws:iam::${aws:accountId}:role/${self:custom.commonPrefix}-apigw-role'
             roleManagedExternally: true
+    logRetentionInDays: 14
     stage: ${opt:stage, 'dev'}
     timeout: 10
 

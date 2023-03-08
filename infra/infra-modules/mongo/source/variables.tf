@@ -80,12 +80,6 @@ variable "auto_scaling_disk_gb_enabled" {
   default     = true
 }
 
-variable "volume_type" {
-  description = "STANDARD or PROVISIONED for IOPS higher than the default instance IOPS"
-  type        = string
-  default     = "STANDARD"
-}
-
 variable "provider_disk_iops" {
   description = "The maximum IOPS the system can perform"
   type        = number
@@ -102,10 +96,6 @@ variable "vpc_peer" {
   description = "An object that contains all VPC peering requests from the cluster to AWS VPC's"
   type        = map(any)
   default     = {}
-}
-
-locals {
-  cloud_provider = "AWS"
 }
 
 

@@ -4,11 +4,11 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 terraform {
-  required_version = ">= 0.14"
+  required_version = ">= 1.3.7"
   required_providers {
     mongodbatlas = {
       source  = "mongodb/mongodbatlas"
-      version = "0.8.2"
+      version = "1.8.1"
     }
   }
 }
@@ -30,19 +30,6 @@ resource "mongodbatlas_project" "project" {
       role_names = [teams.value.role]
     }
   }
-
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
-# CREATE TEAMS FROM **EXISTING USERS**
-# ---------------------------------------------------------------------------------------------------------------------
-
-resource "mongodbatlas_teams" "team" {
-  for_each = var.teams
-
-  org_id    = var.org_id
-  name      = each.key
-  usernames = each.value.users
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -50,8 +37,7 @@ resource "mongodbatlas_teams" "team" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 #Optionall, if no variable is passed, the loop will run on an empty object.
-
-resource "mongodbatlas_project_ip_whitelist" "whitelists" {
+resource "mongodbatlas_project_ip_access_list" "whitelists" {
   for_each = var.white_lists
 
   project_id = mongodbatlas_project.project.id
@@ -65,7 +51,8 @@ resource "mongodbatlas_project_ip_whitelist" "whitelists" {
 
 resource "mongodbatlas_cluster" "cluster" {
   project_id                   = mongodbatlas_project.project.id
-  provider_name                = local.cloud_provider
+  provider_name                = "TENANT"
+  backing_provider_name        = "AWS"
   provider_region_name         = var.region
   name                         = var.cluster_name
   provider_instance_size_name  = var.instance_type
@@ -73,27 +60,22 @@ resource "mongodbatlas_cluster" "cluster" {
   cluster_type                 = var.cluster_type
   num_shards                   = var.num_shards
   replication_factor           = var.replication_factor
-  provider_backup_enabled      = var.provider_backup
   pit_enabled                  = var.pit_enabled
   disk_size_gb                 = var.disk_size_gb
   auto_scaling_disk_gb_enabled = var.auto_scaling_disk_gb_enabled
-  provider_volume_type         = var.volume_type
   provider_disk_iops           = var.provider_disk_iops
-  provider_encrypt_ebs_volume  = var.provider_encrypt_ebs_volume
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
 # CREATE AWS PEER REQUESTS TO AWS VPC
 # ---------------------------------------------------------------------------------------------------------------------
-
-
 resource "mongodbatlas_network_peering" "mongo_peer" {
   for_each = var.vpc_peer
 
   accepter_region_name   = each.value.region
   project_id             = mongodbatlas_project.project.id
   container_id           = mongodbatlas_cluster.cluster.container_id
-  provider_name          = local.cloud_provider
+  provider_name          = "AWS"
   route_table_cidr_block = each.value.route_table_cidr_block
   vpc_id                 = each.value.vpc_id
   aws_account_id         = each.value.aws_account_id
