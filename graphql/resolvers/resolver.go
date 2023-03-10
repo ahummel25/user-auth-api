@@ -2,7 +2,7 @@ package resolvers
 
 import (
 	"github.com/src/user-auth-api/graphql/generated"
-	"github.com/src/user-auth-api/services"
+	"github.com/src/user-auth-api/service/user"
 )
 
 // This file will not be regenerated automatically.
@@ -10,7 +10,7 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Services struct {
-	UserService services.UserService
+	UserService user.API
 }
 
 type mutationResolver struct{ *Services }

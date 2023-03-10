@@ -52,20 +52,14 @@ var (
 	}
 
 	mockDeleteUserResponse struct {
-		DeleteUser string
+		DeleteUser bool
 	}
 	mockResolvers   resolvers.Services
 	testAuthService *mocks.MockedUserService
 )
 
-func setup() {
-	testAuthService = new(mocks.MockedUserService)
-	mockResolvers = resolvers.Services{UserService: testAuthService}
-}
-
-func TestQueryResolver_AuthenticateUser(t *testing.T) {
-	q := `
-	query DoLogin ($username: String!, $password: String!) { 
+var (
+	loginQuery = `query Login($username: String!, $password: String!) { 
 	  authenticateUser(params: {username: $username, password: $password}) {
 		user {
 		  firstName
@@ -75,46 +69,69 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 		  userID
 		}
 	  }
-	}
-  `
+	}`
 
-	t.Run("should authenticate user correctly", func(t *testing.T) {
-		setup()
-
-		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &mockResolvers})))
-		u := model.User{
-			UserID:    mockUserID,
-			FirstName: mockFirstName,
-			LastName:  mockLastName,
-			Email:     mockEmail,
-			UserName:  mockUserName,
+	createUser = `mutation CreateUser($createUserInput: CreateUserInput!) {
+	  createUser(user: $createUserInput) {
+		user {
+		  userID
+		  email
+		  firstName
+		  lastName
+		  userName
 		}
+	  }
+	}`
 
-		uu := model.UserObject{User: &u}
+	deleteUser = `
+	mutation DeleteUser($deleteUserInput: DeleteUserInput!) {
+		deleteUser(user: $deleteUserInput)
+	}`
+)
 
-		testAuthService.On(
-			"AuthenticateUser",
-			mock.AnythingOfType("string"),
-			mock.AnythingOfType("string"),
-		).Return(&uu, nil)
+func setup() {
+	testAuthService = new(mocks.MockedUserService)
+	mockResolvers = resolvers.Services{UserService: testAuthService}
+}
 
-		c.MustPost(
-			q, &mockUserLoginResponse,
-			client.Var("username", mockUserName),
-			client.Var("password", mockPassword),
-		)
+func Test_AuthenticateUser_Success(t *testing.T) {
+	setup()
 
-		testAuthService.AssertExpectations(t)
-		testAuthService.AssertNumberOfCalls(t, "AuthenticateUser", 1)
-		testAuthService.AssertCalled(t, "AuthenticateUser", mockUserName, mockPassword)
+	c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &mockResolvers})))
+	u := model.User{
+		UserID:    mockUserID,
+		FirstName: mockFirstName,
+		LastName:  mockLastName,
+		Email:     mockEmail,
+		UserName:  mockUserName,
+	}
 
-		require.Equal(t, mockUserID, mockUserLoginResponse.AuthenticateUser.User.UserID)
-		require.Equal(t, mockFirstName, mockUserLoginResponse.AuthenticateUser.User.FirstName)
-		require.Equal(t, mockLastName, mockUserLoginResponse.AuthenticateUser.User.LastName)
-		require.Equal(t, mockEmail, mockUserLoginResponse.AuthenticateUser.User.Email)
-		require.Equal(t, mockUserName, mockUserLoginResponse.AuthenticateUser.User.UserName)
-	})
+	uu := model.UserObject{User: &u}
 
+	testAuthService.On(
+		"AuthenticateUser",
+		mock.AnythingOfType("string"),
+		mock.AnythingOfType("string"),
+	).Return(&uu, nil)
+
+	c.MustPost(
+		loginQuery, &mockUserLoginResponse,
+		client.Var("username", mockUserName),
+		client.Var("password", mockPassword),
+	)
+
+	testAuthService.AssertExpectations(t)
+	testAuthService.AssertNumberOfCalls(t, "AuthenticateUser", 1)
+	testAuthService.AssertCalled(t, "AuthenticateUser", mockUserName, mockPassword)
+
+	require.Equal(t, mockUserID, mockUserLoginResponse.AuthenticateUser.User.UserID)
+	require.Equal(t, mockFirstName, mockUserLoginResponse.AuthenticateUser.User.FirstName)
+	require.Equal(t, mockLastName, mockUserLoginResponse.AuthenticateUser.User.LastName)
+	require.Equal(t, mockEmail, mockUserLoginResponse.AuthenticateUser.User.Email)
+	require.Equal(t, mockUserName, mockUserLoginResponse.AuthenticateUser.User.UserName)
+}
+
+func Test_AuthenticateUser_Error(t *testing.T) {
 	t.Run("should respond with an error when a valid user is not found", func(t *testing.T) {
 		setup()
 
@@ -129,7 +146,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 		).Return(nil, errNoUserFound)
 
 		err := c.Post(
-			q, &mockUserLoginResponse,
+			loginQuery, &mockUserLoginResponse,
 			client.Var("username", mockUserName),
 			client.Var("password", mockPassword),
 		)
@@ -156,7 +173,7 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 		).Return(nil, errInvalidPassword)
 
 		err := c.Post(
-			q, &mockUserLoginResponse,
+			loginQuery, &mockUserLoginResponse,
 			client.Var("username", mockUserName),
 			client.Var("password", mockPassword),
 		)
@@ -170,7 +187,15 @@ func TestQueryResolver_AuthenticateUser(t *testing.T) {
 	})
 }
 
-func TestMutationResolver_CreateUser(t *testing.T) {
+func Test_CreateUser_Success(t *testing.T) {
+	setup()
+	var createUserInput = model.CreateUserInput{
+		Email:     mockEmail,
+		FirstName: mockFirstName,
+		LastName:  mockLastName,
+		UserName:  mockUserName,
+		Password:  mockPassword,
+	}
 	cfg := generated.Config{
 		Resolvers: &mockResolvers,
 		Directives: generated.DirectiveRoot{
@@ -182,65 +207,58 @@ func TestMutationResolver_CreateUser(t *testing.T) {
 		},
 	}
 
-	q := `
-	mutation CreateUser($createUserInput: CreateUserInput!) {
-		createUser(user: $createUserInput) {
-		  user {
-			userID
-			email
-			firstName
-			lastName
-			userName
-		  }
-		}
-	  }
-  `
-
-	var createUserInput = model.CreateUserInput{
-		Email:     mockEmail,
+	c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(cfg)))
+	u := model.User{
+		UserID:    mockUserID,
 		FirstName: mockFirstName,
 		LastName:  mockLastName,
+		Email:     mockEmail,
 		UserName:  mockUserName,
-		Password:  mockPassword,
 	}
 
-	t.Run("should create user", func(t *testing.T) {
-		setup()
+	uu := model.UserObject{User: &u}
 
-		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(cfg)))
-		u := model.User{
-			UserID:    mockUserID,
-			FirstName: mockFirstName,
-			LastName:  mockLastName,
-			Email:     mockEmail,
-			UserName:  mockUserName,
-		}
+	testAuthService.On(
+		"CreateUser",
+		mock.AnythingOfType("CreateUserInput"),
+	).Return(&uu, nil)
 
-		uu := model.UserObject{User: &u}
+	c.MustPost(
+		createUser, &mockCreateUserResponse,
+		client.Var("createUserInput", createUserInput),
+	)
 
-		testAuthService.On(
-			"CreateUser",
-			mock.AnythingOfType("CreateUserInput"),
-		).Return(&uu, nil)
+	testAuthService.AssertExpectations(t)
+	testAuthService.AssertNumberOfCalls(t, "CreateUser", 1)
+	testAuthService.AssertCalled(t, "CreateUser", createUserInput)
 
-		c.MustPost(
-			q, &mockCreateUserResponse,
-			client.Var("createUserInput", createUserInput),
-		)
+	require.Equal(t, mockUserID, mockCreateUserResponse.CreateUser.User.UserID)
+	require.Equal(t, mockFirstName, mockCreateUserResponse.CreateUser.User.FirstName)
+	require.Equal(t, mockLastName, mockCreateUserResponse.CreateUser.User.LastName)
+	require.Equal(t, mockEmail, mockCreateUserResponse.CreateUser.User.Email)
+	require.Equal(t, mockUserName, mockCreateUserResponse.CreateUser.User.UserName)
+}
 
-		testAuthService.AssertExpectations(t)
-		testAuthService.AssertNumberOfCalls(t, "CreateUser", 1)
-		testAuthService.AssertCalled(t, "CreateUser", createUserInput)
-
-		require.Equal(t, mockUserID, mockCreateUserResponse.CreateUser.User.UserID)
-		require.Equal(t, mockFirstName, mockCreateUserResponse.CreateUser.User.FirstName)
-		require.Equal(t, mockLastName, mockCreateUserResponse.CreateUser.User.LastName)
-		require.Equal(t, mockEmail, mockCreateUserResponse.CreateUser.User.Email)
-		require.Equal(t, mockUserName, mockCreateUserResponse.CreateUser.User.UserName)
-	})
-
+func Test_CreateUser_Error(t *testing.T) {
 	t.Run("should respond with an error when a username is already taken", func(t *testing.T) {
 		setup()
+		var createUserInput = model.CreateUserInput{
+			Email:     mockEmail,
+			FirstName: mockFirstName,
+			LastName:  mockLastName,
+			UserName:  mockUserName,
+			Password:  mockPassword,
+		}
+		cfg := generated.Config{
+			Resolvers: &mockResolvers,
+			Directives: generated.DirectiveRoot{
+				HasRole: func(
+					ctx context.Context, obj interface{}, next graphql.Resolver, role model.Role, action model.Action,
+				) (res interface{}, err error) {
+					return next(ctx)
+				},
+			},
+		}
 
 		testAuthService.ErrorUserAlreadyExists = true
 
@@ -252,7 +270,7 @@ func TestMutationResolver_CreateUser(t *testing.T) {
 		).Return(nil, errUserNameAlreadyExists)
 
 		err := c.Post(
-			q, &mockCreateUserResponse,
+			createUser, &mockCreateUserResponse,
 			client.Var("createUserInput", createUserInput),
 		)
 
@@ -265,7 +283,15 @@ func TestMutationResolver_CreateUser(t *testing.T) {
 	})
 }
 
-func TestMutationResolver_DeleteUser(t *testing.T) {
+func Test_DeleteUser_Success(t *testing.T) {
+	setup()
+	var deleteUserInput = model.DeleteUserInput{
+		Email:     mockEmail,
+		FirstName: mockFirstName,
+		LastName:  mockLastName,
+		UserID:    mockUserID,
+		UserName:  mockUserName,
+	}
 	cfg := generated.Config{
 		Resolvers: &mockResolvers,
 		Directives: generated.DirectiveRoot{
@@ -277,46 +303,44 @@ func TestMutationResolver_DeleteUser(t *testing.T) {
 		},
 	}
 
-	q := `
-	mutation DeleteUser($deleteUserInput: DeleteUserInput!) {
-		deleteUser(user: $deleteUserInput)
-	}
-  `
+	c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(cfg)))
 
-	var deleteUserInput = model.DeleteUserInput{
-		Email:     mockEmail,
-		FirstName: mockFirstName,
-		LastName:  mockLastName,
-		UserID:    mockUserID,
-		UserName:  mockUserName,
-	}
+	testAuthService.On(
+		"DeleteUser",
+		mock.AnythingOfType("DeleteUserInput"),
+	).Return(true, nil)
 
-	t.Run("should delete the user", func(t *testing.T) {
-		setup()
+	c.MustPost(
+		deleteUser, &mockDeleteUserResponse,
+		client.Var("deleteUserInput", deleteUserInput),
+	)
 
-		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(cfg)))
-		r := deleteUserInput.UserName + " successfully deleted"
+	testAuthService.AssertExpectations(t)
+	testAuthService.AssertNumberOfCalls(t, "DeleteUser", 1)
+	testAuthService.AssertCalled(t, "DeleteUser", deleteUserInput)
+	require.Equal(t, true, mockDeleteUserResponse.DeleteUser)
+}
 
-		testAuthService.On(
-			"DeleteUser",
-			mock.AnythingOfType("DeleteUserInput"),
-		).Return(r, nil)
-
-		c.MustPost(
-			q, &mockDeleteUserResponse,
-			client.Var("deleteUserInput", deleteUserInput),
-		)
-
-		testAuthService.AssertExpectations(t)
-		testAuthService.AssertNumberOfCalls(t, "DeleteUser", 1)
-		testAuthService.AssertCalled(t, "DeleteUser", deleteUserInput)
-
-		require.Equal(t, r, mockDeleteUserResponse.DeleteUser)
-	})
-
+func Test_DeleteUser_Error(t *testing.T) {
 	t.Run("should respond with an error when a user trying to be deleted does not exist", func(t *testing.T) {
 		setup()
-
+		var deleteUserInput = model.DeleteUserInput{
+			Email:     mockEmail,
+			FirstName: mockFirstName,
+			LastName:  mockLastName,
+			UserID:    mockUserID,
+			UserName:  mockUserName,
+		}
+		cfg := generated.Config{
+			Resolvers: &mockResolvers,
+			Directives: generated.DirectiveRoot{
+				HasRole: func(
+					ctx context.Context, obj interface{}, next graphql.Resolver, role model.Role, action model.Action,
+				) (res interface{}, err error) {
+					return next(ctx)
+				},
+			},
+		}
 		testAuthService.ErrorNoUserFound = true
 
 		c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(cfg)))
@@ -324,18 +348,18 @@ func TestMutationResolver_DeleteUser(t *testing.T) {
 		testAuthService.On(
 			"DeleteUser",
 			mock.AnythingOfType("DeleteUserInput"),
-		).Return(nil, errNoUserFound)
+		).Return(false, errNoUserFound)
 
 		err := c.Post(
-			q, &mockDeleteUserResponse,
+			deleteUser, &mockDeleteUserResponse,
 			client.Var("deleteUserInput", deleteUserInput),
 		)
 
 		testAuthService.AssertExpectations(t)
 		testAuthService.AssertNumberOfCalls(t, "DeleteUser", 1)
 		testAuthService.AssertCalled(t, "DeleteUser", deleteUserInput)
-
 		require.Empty(t, mockDeleteUserResponse)
+		require.Equal(t, false, mockDeleteUserResponse.DeleteUser)
 		require.EqualError(t, err, `[{"message":"`+errNoUserFound.Error()+`","path":["deleteUser"]}]`)
 	})
 }

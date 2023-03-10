@@ -38,7 +38,7 @@ func (s *MockedUserService) AuthenticateUser(ctx context.Context, username strin
 }
 
 // CreateUser mocks the create user authentication.
-func (s *MockedUserService) CreateUser(params model.CreateUserInput) (*model.UserObject, error) {
+func (s *MockedUserService) CreateUser(ctx context.Context, params model.CreateUserInput) (*model.UserObject, error) {
 	args := s.Called(params)
 
 	if s.ErrorUserAlreadyExists {
@@ -49,12 +49,12 @@ func (s *MockedUserService) CreateUser(params model.CreateUserInput) (*model.Use
 }
 
 // DeleteUser mocks the delete user function.
-func (s *MockedUserService) DeleteUser(params model.DeleteUserInput) (string, error) {
+func (s *MockedUserService) DeleteUser(ctx context.Context, params model.DeleteUserInput) (bool, error) {
 	_ = s.Called(params)
 
 	if s.ErrorNoUserFound {
-		return "", errNoUserFound
+		return false, errNoUserFound
 	}
 
-	return params.UserName + " successfully deleted", nil
+	return true, nil
 }

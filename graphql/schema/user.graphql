@@ -28,7 +28,7 @@ type Mutation {
     createUser(user: CreateUserInput!): UserObject!
         @hasRole(role: ADMIN, action: CREATE_USER)
     "Mutation to handle an existing user deletion request."
-    deleteUser(user: DeleteUserInput!): String!
+    deleteUser(user: DeleteUserInput!): Boolean!
         @hasRole(role: ADMIN, action: DELETE_USER)
 }
 

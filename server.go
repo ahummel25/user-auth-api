@@ -12,7 +12,7 @@ import (
 	"github.com/src/user-auth-api/graphql/generated"
 	"github.com/src/user-auth-api/graphql/model"
 	"github.com/src/user-auth-api/graphql/resolvers"
-	"github.com/src/user-auth-api/services"
+	"github.com/src/user-auth-api/service/user"
 )
 
 const defaultPort = "8080"
@@ -29,7 +29,7 @@ func main() {
 
 	env := os.Getenv("ENV")
 
-	userService := services.NewUserService()
+	userService := user.New()
 
 	resolvers := resolvers.Services{
 		UserService: userService,

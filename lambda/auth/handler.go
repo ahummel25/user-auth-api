@@ -18,7 +18,7 @@ import (
 	"github.com/src/user-auth-api/graphql/generated"
 	"github.com/src/user-auth-api/graphql/model"
 	"github.com/src/user-auth-api/graphql/resolvers"
-	"github.com/src/user-auth-api/services"
+	"github.com/src/user-auth-api/service/user"
 	"github.com/src/user-auth-api/utils"
 )
 
@@ -32,7 +32,7 @@ func init() {
 	r := mux.NewRouter()
 	env := os.Getenv("ENV")
 
-	userService := services.NewUserService()
+	userService := user.New()
 
 	initResolvers := resolvers.Services{
 		UserService: userService,
@@ -79,17 +79,21 @@ func LambdaHandler(
 		response *core.SwitchableAPIGatewayResponse
 	)
 
-	newCtx := context.WithValue(ctx, "DB", "Connection")
+	usersCollection, err := user.GetUsersCollection(ctx)
+	if err != nil {
+		*response.Version1() = utils.BuildErrorResponse(*response.Version1(), err.Error())
+		return *response.Version1(), nil
+	}
 
+	// Add Mongo collection to context
+	newCtx := user.NewContext(ctx, usersCollection)
 	if response, err = muxAdapter.ProxyWithContext(newCtx, *core.NewSwitchableAPIGatewayRequestV1(&request)); err != nil {
 		log.Printf("Proxy Error: %+v\n", err)
 		*response.Version1() = utils.BuildErrorResponse(*response.Version1(), err.Error())
-
 		return *response.Version1(), nil
 	}
 
 	apiGWResponse := response.Version1()
-
 	apiGWResponse.Headers = map[string]string{
 		"Access-Control-Allow-Origin":      "*",
 		"Access-Control-Allow-Credentials": "true",
