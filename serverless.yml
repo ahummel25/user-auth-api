@@ -4,7 +4,16 @@ service: user-auth-api
 # Check out our docs for more details
 frameworkVersion: '>=3.0.0'
 
+plugins:
+    - serverless-domain-manager
+
 custom:
+    customDomain:
+        domainName: api-dev.andrewhummel.dev
+        certificateName: '*.andrewhummel.dev'
+        basePath: ''
+        stage: ${self:provider.stage}
+        createRoute53Record: false
     commonPrefix: ${self:service}-${self:provider.stage}
     vpc: ${file(./${self:provider.stage}.yml):vpc}
 
@@ -28,8 +37,8 @@ provider:
     timeout: 10
 
 package:
-    exclude:
-        - ./**
+    patterns:
+        - '!vscode/**'
     individually: true
 
 functions:

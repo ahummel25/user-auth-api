@@ -9,6 +9,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+
 	"github.com/src/user-auth-api/graphql/generated"
 	"github.com/src/user-auth-api/graphql/model"
 	"github.com/src/user-auth-api/graphql/resolvers"
@@ -27,10 +28,7 @@ func main() {
 		port = defaultPort
 	}
 
-	env := os.Getenv("ENV")
-
 	userService := user.New()
-
 	resolvers := resolvers.Services{
 		UserService: userService,
 	}
@@ -42,18 +40,14 @@ func main() {
 				ctx context.Context, obj interface{}, next graphql.Resolver, role model.Role, action model.Action,
 			) (res interface{}, err error) {
 				fc := graphql.GetFieldContext(ctx).Args
-
 				log.Printf("Action: %s\n", action.String())
 
 				switch action.String() {
 				case model.ActionCreateUser.String():
 					log.Printf("%+v\n", fc["user"].(model.CreateUserInput).Email)
-					break
 				case model.ActionDeleteUser.String():
 					log.Printf("%+v\n", fc["user"].(model.DeleteUserInput).Email)
-					break
 				}
-
 				return next(ctx)
 			},
 		},
@@ -61,10 +55,7 @@ func main() {
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(c))
 
-	if env != "prod" {
-		http.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))
-	}
-
+	http.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))
 	http.Handle("/graphql", srv)
 	http.HandleFunc("/", notFoundHandler)
 

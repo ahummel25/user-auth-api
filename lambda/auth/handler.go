@@ -2,10 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -30,15 +28,13 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 
 func init() {
 	r := mux.NewRouter()
-	env := os.Getenv("ENV")
+	r.Use(injectDBCollection)
 
 	userService := user.New()
-
 	initResolvers := resolvers.Services{
 		UserService: userService,
 	}
-
-	c := generated.Config{
+	cfg := generated.Config{
 		Resolvers: &initResolvers,
 		Directives: generated.DirectiveRoot{
 			HasRole: func(
@@ -57,15 +53,12 @@ func init() {
 			},
 		},
 	}
-
-	// From server.go
-	schema := generated.NewExecutableSchema(c)
+	schema := generated.NewExecutableSchema(cfg)
 	server := handler.NewDefaultServer(schema)
 
-	r.Handle("/graphiql", playground.Handler("GraphQL playground", fmt.Sprintf("/%s/graphql", env)))
+	r.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))
 	r.Handle("/graphql", server)
 	r.NotFoundHandler = http.HandlerFunc(notFoundHandler)
-
 	muxAdapter = gorillamux.New(r)
 }
 
@@ -75,25 +68,16 @@ func LambdaHandler(
 	request events.APIGatewayProxyRequest,
 ) (events.APIGatewayProxyResponse, error) {
 	var (
-		err      error
-		response *core.SwitchableAPIGatewayResponse
+		apiGWResponse                events.APIGatewayProxyResponse
+		err                          error
+		switchableAPIGatewayResponse *core.SwitchableAPIGatewayResponse
 	)
-
-	usersCollection, err := user.GetUsersCollection(ctx)
-	if err != nil {
-		*response.Version1() = utils.BuildErrorResponse(*response.Version1(), err.Error())
-		return *response.Version1(), nil
+	if switchableAPIGatewayResponse, err = muxAdapter.ProxyWithContext(ctx, *core.NewSwitchableAPIGatewayRequestV1(&request)); err != nil {
+		apiGWResponse = utils.BuildErrorResponse(apiGWResponse, err.Error())
+		return apiGWResponse, nil
 	}
 
-	// Add Mongo collection to context
-	newCtx := user.NewContext(ctx, usersCollection)
-	if response, err = muxAdapter.ProxyWithContext(newCtx, *core.NewSwitchableAPIGatewayRequestV1(&request)); err != nil {
-		log.Printf("Proxy Error: %+v\n", err)
-		*response.Version1() = utils.BuildErrorResponse(*response.Version1(), err.Error())
-		return *response.Version1(), nil
-	}
-
-	apiGWResponse := response.Version1()
+	apiGWResponse = *switchableAPIGatewayResponse.Version1()
 	apiGWResponse.Headers = map[string]string{
 		"Access-Control-Allow-Origin":      "*",
 		"Access-Control-Allow-Credentials": "true",
@@ -102,5 +86,5 @@ func LambdaHandler(
 	apiGWResponse.IsBase64Encoded = false
 	apiGWResponse.StatusCode = http.StatusOK
 
-	return *apiGWResponse, nil
+	return apiGWResponse, nil
 }

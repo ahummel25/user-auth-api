@@ -49,7 +49,6 @@ data "aws_iam_policy_document" "trust-lambda-assume-role-policy" {
 }
 
 data "aws_iam_policy_document" "lambda-permissions-policy" {
-
   statement {
     effect = "Allow"
 
@@ -65,5 +64,15 @@ data "aws_iam_policy_document" "lambda-permissions-policy" {
     ]
 
     resources = ["arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:*"]
+  }
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetSecretValue"
+    ]
+
+    resources = ["arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:andrewhummel/api/${var.env}-*"]
   }
 }

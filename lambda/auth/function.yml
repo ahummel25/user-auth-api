@@ -2,8 +2,7 @@ handler: my.bootstrap.file
 package:
     artifact: ./build/packages/auth.zip
 environment:
-    ENV: ${self:provider.stage}
-    MONGODB_URI: ${ssm:/user-auth-api/${self:provider.stage}/MONGODB_URI}
+    SECRET_NAME: andrewhummel/api/${self:provider.stage}
 events:
     - http:
           method: GET
