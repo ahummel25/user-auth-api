@@ -26,6 +26,8 @@ type CreateUserInput struct {
 	LastName string `json:"lastName"`
 	// The user's username
 	UserName string `json:"userName"`
+	// The user's role
+	Role *Role `json:"role"`
 	// The user's password
 	Password string `json:"password"`
 }
@@ -56,6 +58,8 @@ type User struct {
 	LastName string `json:"lastName"`
 	// The user's username
 	UserName string `json:"userName"`
+	// The user's role
+	Role Role `json:"role"`
 }
 
 type UserObject struct {

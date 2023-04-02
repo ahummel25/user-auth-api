@@ -17,7 +17,6 @@ import (
 	"github.com/src/user-auth-api/graphql/model"
 	"github.com/src/user-auth-api/graphql/resolvers"
 	"github.com/src/user-auth-api/service/user"
-	"github.com/src/user-auth-api/utils"
 )
 
 var muxAdapter *gorillamux.GorillaMuxAdapter
@@ -57,6 +56,7 @@ func init() {
 	server := handler.NewDefaultServer(schema)
 
 	r.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))
+	r.Handle("/apollo", playground.ApolloSandboxHandler("GraphQL Apollo playground", "/graphql"))
 	r.Handle("/graphql", server)
 	r.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 	muxAdapter = gorillamux.New(r)
@@ -73,18 +73,11 @@ func LambdaHandler(
 		switchableAPIGatewayResponse *core.SwitchableAPIGatewayResponse
 	)
 	if switchableAPIGatewayResponse, err = muxAdapter.ProxyWithContext(ctx, *core.NewSwitchableAPIGatewayRequestV1(&request)); err != nil {
-		apiGWResponse = utils.BuildErrorResponse(apiGWResponse, err.Error())
-		return apiGWResponse, nil
+		return apiGWResponse, err
 	}
 
 	apiGWResponse = *switchableAPIGatewayResponse.Version1()
-	apiGWResponse.Headers = map[string]string{
-		"Access-Control-Allow-Origin":      "*",
-		"Access-Control-Allow-Credentials": "true",
-		"Content-Type":                     "application/json",
-	}
 	apiGWResponse.IsBase64Encoded = false
 	apiGWResponse.StatusCode = http.StatusOK
-
 	return apiGWResponse, nil
 }

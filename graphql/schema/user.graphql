@@ -44,6 +44,8 @@ type User {
     lastName: String!
     "The user's username"
     userName: String!
+    "The user's role"
+    role: Role!
 }
 
 type UserObject {
@@ -61,6 +63,8 @@ input CreateUserInput {
     lastName: String!
     "The user's username"
     userName: String!
+    "The user's role"
+    role: Role
     "The user's password"
     password: String!
 }

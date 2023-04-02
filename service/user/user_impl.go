@@ -24,7 +24,7 @@ var (
 func (u *User) AuthenticateUser(ctx context.Context, username string, password string) (*model.UserObject, error) {
 	var err error
 	userDB := &userDB{}
-	usersCollection := service.FromContext(ctx, &usersCollectionCtxKey)
+	usersCollection := service.FromContext(ctx, &usersCollectionCtxKey{})
 	filter := bson.M{"user_name": username}
 	if err = usersCollection.FindOne(ctx, filter).Decode(userDB); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
@@ -47,6 +47,7 @@ func (u *User) AuthenticateUser(ctx context.Context, username string, password s
 		FirstName: userDB.FirstName,
 		LastName:  userDB.LastName,
 		UserName:  userDB.UserName,
+		Role:      userDB.Role,
 	}
 	user := &model.UserObject{User: loggedInUser}
 	return user, nil
@@ -60,7 +61,7 @@ func (u *User) CreateUser(ctx context.Context, params model.CreateUserInput) (*m
 		userCount int64
 	)
 
-	usersCollection := service.FromContext(ctx, &usersCollectionCtxKey)
+	usersCollection := service.FromContext(ctx, &usersCollectionCtxKey{})
 	// Verify if the user name already exists
 	filter := bson.M{"user_name": params.UserName}
 	if userCount, err = usersCollection.CountDocuments(ctx, filter); err != nil {
@@ -76,6 +77,11 @@ func (u *User) CreateUser(ctx context.Context, params model.CreateUserInput) (*m
 		return nil, err
 	}
 	newUserID := uuid.New().String()
+	// Default to user role unless one is provided
+	role := model.RoleUser
+	if params.Role != nil {
+		role = *params.Role
+	}
 	newUserInput := bson.D{
 		{
 			Key: "user_id", Value: newUserID,
@@ -93,6 +99,9 @@ func (u *User) CreateUser(ctx context.Context, params model.CreateUserInput) (*m
 			Key: "user_name", Value: params.UserName,
 		},
 		{
+			Key: "role", Value: role,
+		},
+		{
 			Key: "password", Value: string(hash),
 		},
 	}
@@ -107,6 +116,7 @@ func (u *User) CreateUser(ctx context.Context, params model.CreateUserInput) (*m
 		FirstName: params.FirstName,
 		LastName:  params.LastName,
 		UserName:  params.UserName,
+		Role:      role,
 	}
 	user := &model.UserObject{User: newUser}
 	return user, nil
@@ -118,7 +128,7 @@ func (u *User) DeleteUser(ctx context.Context, params model.DeleteUserInput) (bo
 		deleteResult *mongo.DeleteResult
 		err          error
 	)
-	usersCollection := service.FromContext(ctx, &usersCollectionCtxKey)
+	usersCollection := service.FromContext(ctx, &usersCollectionCtxKey{})
 	filter := bson.M{"user_id": params.UserID}
 	if deleteResult, err = usersCollection.DeleteOne(ctx, filter); err != nil {
 		return false, err

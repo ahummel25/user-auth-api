@@ -1,4 +1,4 @@
-service: user-auth-api
+service: api
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -18,7 +18,7 @@ custom:
     domain:
         dev: api-dev.andrewhummel.dev
         prod: api.andrewhummel.dev
-    vpc: ${file(./${self:provider.stage}.yml):vpc}
+    # vpc: ${file(./${self:provider.stage}.yml):vpc}
 
 provider:
     name: aws
@@ -33,7 +33,9 @@ provider:
         restApi:
             accessLogging: true
             executionLogging: true
-            role: 'arn:aws:iam::${aws:accountId}:role/${self:custom.commonPrefix}-apigw-role'
+            fullExecutionData: true
+            level: INFO
+            role: 'arn:aws:iam::${aws:accountId}:role/${self:service}-apigw-role'
             roleManagedExternally: true
     logRetentionInDays: 14
     stage: ${opt:stage, 'dev'}
@@ -45,4 +47,4 @@ package:
     individually: true
 
 functions:
-    auth: ${file(lambda/auth/function.yml)}
+    graphql: ${file(lambda/auth/function.yml)}

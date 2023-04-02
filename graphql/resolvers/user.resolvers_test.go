@@ -20,7 +20,7 @@ import (
 
 var (
 	errInvalidPassword       = errors.New("invalid password")
-	errNoUserFound           = errors.New("no user found!")
+	errNoUserFound           = errors.New("no user found")
 	errUserNameAlreadyExists = errors.New("user name already exists")
 	mockUserID               = "1"
 	mockFirstName            = "John"
@@ -28,6 +28,7 @@ var (
 	mockEmail                = "mock_email@gmail.com"
 	mockPassword             = "mockPassword123"
 	mockUserName             = "mock_username"
+	mockRole                 = model.RoleUser
 	mockUserLoginResponse    struct {
 		AuthenticateUser struct {
 			User struct {
@@ -36,6 +37,7 @@ var (
 				LastName  string
 				Email     string
 				UserName  string
+				Role      model.Role
 			}
 		}
 	}
@@ -48,6 +50,7 @@ var (
 				LastName  string
 				Email     string
 				UserName  string
+				Role      model.Role
 			}
 		}
 	}
@@ -68,6 +71,7 @@ var (
 		  email
 		  userName
 		  userID
+		  role
 		}
 	  }
 	}`
@@ -80,6 +84,7 @@ var (
 		  firstName
 		  lastName
 		  userName
+		  role
 		}
 	  }
 	}`
@@ -108,6 +113,7 @@ func Test_AuthenticateUser_Success(t *testing.T) {
 		LastName:  mockLastName,
 		Email:     mockEmail,
 		UserName:  mockUserName,
+		Role:      mockRole,
 	}
 
 	uu := model.UserObject{User: &u}
@@ -134,6 +140,7 @@ func Test_AuthenticateUser_Success(t *testing.T) {
 	require.Equal(t, mockLastName, mockUserLoginResponse.AuthenticateUser.User.LastName)
 	require.Equal(t, mockEmail, mockUserLoginResponse.AuthenticateUser.User.Email)
 	require.Equal(t, mockUserName, mockUserLoginResponse.AuthenticateUser.User.UserName)
+	require.Equal(t, mockRole, mockUserLoginResponse.AuthenticateUser.User.Role)
 }
 
 func Test_AuthenticateUser_Error(t *testing.T) {
@@ -226,6 +233,7 @@ func Test_CreateUser_Success(t *testing.T) {
 		LastName:  mockLastName,
 		Email:     mockEmail,
 		UserName:  mockUserName,
+		Role:      mockRole,
 	}
 
 	uu := model.UserObject{User: &u}
@@ -250,6 +258,7 @@ func Test_CreateUser_Success(t *testing.T) {
 	require.Equal(t, mockLastName, mockCreateUserResponse.CreateUser.User.LastName)
 	require.Equal(t, mockEmail, mockCreateUserResponse.CreateUser.User.Email)
 	require.Equal(t, mockUserName, mockCreateUserResponse.CreateUser.User.UserName)
+	require.Equal(t, mockRole, mockCreateUserResponse.CreateUser.User.Role)
 }
 
 func Test_CreateUser_Error(t *testing.T) {

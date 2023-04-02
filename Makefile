@@ -1,7 +1,7 @@
 BUILD_PREFIX          = env GOOS=linux GOARCH=amd64 go build
 COMMON_LDFLAGS        = "-s -w"
 COMMON_TAGS           = "lambda.norpc"
-DEPLOYMENT_STAGE      = dev # Make this an env variable
+DEPLOYMENT_STAGE      = ${TF_WORKSPACE}
 
 .PHONY: build clean deploy gomodgen
 

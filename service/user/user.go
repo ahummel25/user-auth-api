@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/src/user-auth-api/graphql/model"
-	"github.com/src/user-auth-api/service"
 )
 
 //go:generate mockery --name API
@@ -19,15 +18,17 @@ type API interface {
 
 type User struct{}
 
-var usersCollectionCtxKey service.CollectionCtxKey = "usersDB"
+// usersCollectionCtxKey represents the context key of the users Mongo collection
+type usersCollectionCtxKey struct{}
 
 type userDB struct {
-	UserID    string `bson:"user_id"`
-	Email     string `bson:"email"`
-	FirstName string `bson:"first_name"`
-	LastName  string `bson:"last_name"`
-	UserName  string `bson:"user_name"`
-	Password  string `bson:"password"`
+	UserID    string     `bson:"user_id"`
+	Email     string     `bson:"email"`
+	FirstName string     `bson:"first_name"`
+	LastName  string     `bson:"last_name"`
+	UserName  string     `bson:"user_name"`
+	Role      model.Role `bson:"role"`
+	Password  string     `bson:"password"`
 }
 
 // New returns a pointer to a new auth service.
@@ -36,6 +37,6 @@ func New() *User {
 }
 
 // GetUsersCollectionKey is a wrapper function around the usersCollectionCtxKey returning a pointer to that value
-func GetUsersCollectionKey() *service.CollectionCtxKey {
-	return &usersCollectionCtxKey
+func GetUsersCollectionKey() *usersCollectionCtxKey {
+	return &usersCollectionCtxKey{}
 }

@@ -45,4 +45,4 @@ terraform.tfstate*
 .terragrunt*
 
 # Secret credentials
-*.secrets.json
+*secrets.json
