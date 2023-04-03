@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	authDB = "auth"
+	usersDB = "users"
 )
 
 var (
@@ -44,7 +44,7 @@ func GetCollection(ctx context.Context, collectionName string) (*mongo.Collectio
 		log.Printf("Error connecting to MongoDB: %v\n", err)
 		return nil, errors.New("error connecting to DB")
 	}
-	db := connection.Database(authDB)
+	db := connection.Database(usersDB)
 	collection = db.Collection(collectionName)
 	return collection, nil
 }

@@ -15,7 +15,7 @@ generate "provider" {
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
 	provider "aws" {
-	region = "${local.aws_region}"
+	  region = "${local.aws_region}"
 	  # Only these AWS Account IDs may be operated on by this template
 	  allowed_account_ids = ["${local.account_id}"]
 	}
@@ -50,11 +50,11 @@ remote_state {
   backend = "s3"
   config = {
     encrypt             = true
-    bucket              = "personal-api-${local.env}-terraform-state"
+    bucket              = "${local.env}-personal-terraform-state"
     key                 = "${path_relative_to_include()}/terraform.tfstate"
     region              = local.aws_region
     s3_bucket_tags      = local.common_tags
-    dynamodb_table      = "api-${local.env}-terraform-state"
+    dynamodb_table      = "${local.env}-personal-terraform-state"
     dynamodb_table_tags = local.common_tags
   }
   generate = {

@@ -1,5 +1,5 @@
 data "aws_s3_object" "db_users" {
-  bucket = "personal-api-${local.env}-terraform-state"
+  bucket = "${local.env}-personal-terraform-state"
   key    = "mongo/db_users.json"
 }
 
