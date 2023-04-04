@@ -3,7 +3,7 @@ module github.com/src/user-auth-api
 go 1.20
 
 require (
-	github.com/99designs/gqlgen v0.17.27
+	github.com/99designs/gqlgen v0.17.28
 	github.com/aws/aws-lambda-go v1.38.0
 	github.com/aws/aws-secretsmanager-caching-go v1.1.0
 	github.com/awslabs/aws-lambda-go-api-proxy v0.14.0
