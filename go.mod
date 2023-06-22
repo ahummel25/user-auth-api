@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/99designs/gqlgen v0.17.33
 	github.com/aws/aws-lambda-go v1.41.0
-	github.com/aws/aws-secretsmanager-caching-go v1.1.0
+	github.com/aws/aws-secretsmanager-caching-go v1.1.2
 	github.com/awslabs/aws-lambda-go-api-proxy v0.14.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/locales v0.14.1
@@ -21,7 +21,7 @@ require (
 
 require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
-	github.com/aws/aws-sdk-go v1.44.284 // indirect
+	github.com/aws/aws-sdk-go v1.44.287 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
