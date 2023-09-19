@@ -454,6 +454,8 @@ github.com/valyala/tcplisten v0.0.0-20161114210144-ceec8f93295a/go.mod h1:v3UYOV
 github.com/valyala/tcplisten v1.0.0/go.mod h1:T0xQ8SeCZGxckz9qRXTfG43PvQ/mcWh7FwZEA7Ioqkc=
 github.com/vektah/gqlparser/v2 v2.5.8 h1:pm6WOnGdzFOCfcQo9L3+xzW51mKrlwTEg4Wr7AH1JW4=
 github.com/vektah/gqlparser/v2 v2.5.8/go.mod h1:z8xXUff237NntSuH8mLFijZ+1tjV1swDbpDqjJmk6ME=
+github.com/vektah/gqlparser/v2 v2.5.10 h1:6zSM4azXC9u4Nxy5YmdmGu4uKamfwsdKTwp5zsEealU=
+github.com/vektah/gqlparser/v2 v2.5.10/go.mod h1:1rCcfwB2ekJofmluGWXMSEnPMZgbxzwj6FaZ/4OT8Cc=
 github.com/vmihailenco/msgpack/v5 v5.3.5/go.mod h1:7xyJ9e+0+9SaZT0Wt1RGleJXzli6Q/V5KbhBonMG9jc=
 github.com/vmihailenco/tagparser/v2 v2.0.0/go.mod h1:Wri+At7QHww0WTrCBeu4J6bNtoV6mEfg5OIWRZA9qds=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
