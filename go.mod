@@ -6,7 +6,7 @@ require (
 	github.com/99designs/gqlgen v0.17.36
 	github.com/aws/aws-lambda-go v1.41.0
 	github.com/aws/aws-secretsmanager-caching-go v1.1.2
-	github.com/awslabs/aws-lambda-go-api-proxy v0.14.0
+	github.com/awslabs/aws-lambda-go-api-proxy v0.16.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
