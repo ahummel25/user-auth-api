@@ -3,7 +3,7 @@ module github.com/src/user-auth-api
 go 1.20
 
 require (
-	github.com/99designs/gqlgen v0.17.36
+	github.com/99designs/gqlgen v0.17.39
 	github.com/aws/aws-lambda-go v1.41.0
 	github.com/aws/aws-secretsmanager-caching-go v1.1.2
 	github.com/awslabs/aws-lambda-go-api-proxy v0.14.0
@@ -14,7 +14,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/stretchr/testify v1.8.4
-	github.com/vektah/gqlparser/v2 v2.5.8
+	github.com/vektah/gqlparser/v2 v2.5.10
 	go.mongodb.org/mongo-driver v1.12.1
 	golang.org/x/crypto v0.12.0
 )
@@ -33,6 +33,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/sosodev/duration v1.1.0 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
