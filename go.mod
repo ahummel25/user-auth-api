@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/99designs/gqlgen v0.17.40
 	github.com/aws/aws-lambda-go v1.41.0
-	github.com/aws/aws-secretsmanager-caching-go v1.1.2
+	github.com/aws/aws-secretsmanager-caching-go v1.1.3
 	github.com/awslabs/aws-lambda-go-api-proxy v0.16.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/locales v0.14.1
