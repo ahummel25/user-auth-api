@@ -1,5 +1,7 @@
 github.com/99designs/gqlgen v0.17.40 h1:/l8JcEVQ93wqIfmH9VS1jsAkwm6eAF1NwQn3N+SDqBY=
 github.com/99designs/gqlgen v0.17.40/go.mod h1:b62q1USk82GYIVjC60h02YguAZLqYZtvWml8KkhJps4=
+github.com/99designs/gqlgen v0.17.43 h1:I4SYg6ahjowErAQcHFVKy5EcWuwJ3+Xw9z2fLpuFCPo=
+github.com/99designs/gqlgen v0.17.43/go.mod h1:lO0Zjy8MkZgBdv4T1U91x09r0e0WFOdhVUutlQs1Rsc=
 github.com/agnivade/levenshtein v1.1.1 h1:QY8M92nrzkmr798gCo3kmMyqXFzdQVpxLlGPRBij0P8=
 github.com/agnivade/levenshtein v1.1.1/go.mod h1:veldBMzWxcCG2ZvUTKD2kJNRdCk5hVbJomOvKkmgYbo=
 github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883 h1:bvNMNQO63//z+xNgfBlViaCIJKLlCJ6/fmUseuG0wVQ=
@@ -86,6 +88,8 @@ github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcU
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 github.com/vektah/gqlparser/v2 v2.5.10 h1:6zSM4azXC9u4Nxy5YmdmGu4uKamfwsdKTwp5zsEealU=
 github.com/vektah/gqlparser/v2 v2.5.10/go.mod h1:1rCcfwB2ekJofmluGWXMSEnPMZgbxzwj6FaZ/4OT8Cc=
+github.com/vektah/gqlparser/v2 v2.5.11 h1:JJxLtXIoN7+3x6MBdtIP59TP1RANnY7pXOaDnADQSf8=
+github.com/vektah/gqlparser/v2 v2.5.11/go.mod h1:1rCcfwB2ekJofmluGWXMSEnPMZgbxzwj6FaZ/4OT8Cc=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.2 h1:FHX5I5B4i4hKRVRBCFRxq1iQRej7WO3hhBuJf+UUySY=
