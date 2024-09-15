@@ -3,7 +3,7 @@ module github.com/ahummel25/user-auth-api
 go 1.23
 
 require (
-	github.com/99designs/gqlgen v0.17.50
+	github.com/99designs/gqlgen v0.17.51
 	github.com/aws/aws-lambda-go v1.47.0
 	github.com/aws/aws-secretsmanager-caching-go/v2 v2.0.2
 	github.com/awslabs/aws-lambda-go-api-proxy v0.16.2
