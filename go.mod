@@ -3,7 +3,7 @@ module github.com/ahummel25/user-auth-api
 go 1.23
 
 require (
-	github.com/99designs/gqlgen v0.17.63
+	github.com/99designs/gqlgen v0.17.64
 	github.com/aws/aws-lambda-go v1.47.0
 	github.com/aws/aws-sdk-go-v2 v1.34.0
 	github.com/aws/aws-sdk-go-v2/config v1.29.2
@@ -18,7 +18,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.1
 	github.com/stretchr/testify v1.10.0
-	github.com/vektah/gqlparser/v2 v2.5.21
+	github.com/vektah/gqlparser/v2 v2.5.22
 	go.mongodb.org/mongo-driver/v2 v2.0.0
 	golang.org/x/crypto v0.32.0
 )
