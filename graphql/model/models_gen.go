@@ -88,7 +88,7 @@ func (e Action) String() string {
 	return string(e)
 }
 
-func (e *Action) UnmarshalGQL(v interface{}) error {
+func (e *Action) UnmarshalGQL(v any) error {
 	str, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("enums must be strings")
@@ -131,7 +131,7 @@ func (e Role) String() string {
 	return string(e)
 }
 
-func (e *Role) UnmarshalGQL(v interface{}) error {
+func (e *Role) UnmarshalGQL(v any) error {
 	str, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("enums must be strings")
