@@ -53,6 +53,26 @@ func NewDBManager() *DBManager {
 // Global instance of DBManager
 var globalDBManager = NewDBManager()
 
+// getLocalDBConnection returns a mongo client connection for local development
+func (m *DBManager) getLocalDBConnection(ctx context.Context) (*mongo.Client, error) {
+	dsn := "mongodb://root:example@localhost:27017"
+	clientOptions := options.Client().
+		ApplyURI(dsn).
+		SetServerAPIOptions(options.ServerAPI(options.ServerAPIVersion1))
+
+	client, err := mongo.Connect(clientOptions)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to MongoDB: %w", err)
+	}
+
+	// Ping the database to verify the connection
+	if err = client.Ping(ctx, nil); err != nil {
+		return nil, fmt.Errorf("failed to ping MongoDB: %w", err)
+	}
+
+	return client, nil
+}
+
 // getDBConnection returns a mongo client connection.
 func (m *DBManager) getDBConnection(ctx context.Context) (*mongo.Client, error) {
 	configSupplier, err := config.FromContext(ctx)
@@ -63,6 +83,11 @@ func (m *DBManager) getDBConnection(ctx context.Context) (*mongo.Client, error) 
 	cfg, err := configSupplier.GetConfig()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get config: %w", err)
+	}
+
+	// For local development
+	if cfg.IsDev {
+		return m.getLocalDBConnection(ctx)
 	}
 
 	// Check if we have valid credentials
@@ -98,13 +123,24 @@ func (m *DBManager) getDBConnection(ctx context.Context) (*mongo.Client, error) 
 	encodedSessionToken := url.QueryEscape(creds.SessionToken)
 
 	// Construct MongoDB connection string with encoded IAM credentials
-	dsn := fmt.Sprintf("mongodb+srv://%s:%s@%s.%s/?authSource=%%24external&authMechanism=MONGODB-AWS&retryWrites=true&w=majority&authMechanismProperties=AWS_SESSION_TOKEN:%s&appName=%s&readPreference=secondary&ssl=true&logLevel=1",
+	dsn := fmt.Sprintf(
+		"mongodb+srv://%s:%s@%s.%s/?"+
+			"authSource=%%24external&"+
+			"authMechanism=MONGODB-AWS&"+
+			"retryWrites=true&"+
+			"w=majority&"+
+			"authMechanismProperties=AWS_SESSION_TOKEN:%s&"+
+			"appName=%s&"+
+			"readPreference=secondary&"+
+			"ssl=true&"+
+			"logLevel=1",
 		encodedAccessKeyID,
 		encodedSecretAccessKey,
 		cfg.Cluster,
 		cfg.Domain,
 		encodedSessionToken,
-		cfg.AppName)
+		cfg.AppName,
+	)
 
 	clientOptions := options.Client().
 		ApplyURI(dsn).

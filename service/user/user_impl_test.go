@@ -101,6 +101,7 @@ func TestLogin(t *testing.T) {
 	t.Run("database error", func(t *testing.T) {
 		mockColl := userMocks.NewMockUserCollection(t)
 		ctx := createContextWithMockCollection(mockColl)
+		err := errors.New("database error")
 
 		expectedFilter := bson.M{
 			"$or": []bson.M{
@@ -110,7 +111,7 @@ func TestLogin(t *testing.T) {
 		}
 
 		// Simulate a database error on FindOne
-		mockResult := mongo.NewSingleResultFromDocument(userDB{}, errors.New("database error"), nil)
+		mockResult := mongo.NewSingleResultFromDocument(userDB{}, err, nil)
 		mockColl.On("FindOne", ctx, expectedFilter).Return(mockResult)
 
 		userSvc := &userSvc{}
@@ -118,7 +119,7 @@ func TestLogin(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
-		assert.Contains(t, err.Error(), "database error")
+		assert.ErrorAs(t, err, &err)
 		mockColl.AssertExpectations(t)
 	})
 
@@ -284,7 +285,7 @@ func TestCreateUser(t *testing.T) {
 	t.Run("database error", func(t *testing.T) {
 		mockColl := userMocks.NewMockUserCollection(t)
 		ctx := createContextWithMockCollection(mockColl)
-
+		err := errors.New("database error")
 		newUser := model.NewUserInput{
 			Email:    "test@example.com",
 			UserName: "testuser",
@@ -299,14 +300,14 @@ func TestCreateUser(t *testing.T) {
 		}
 		mockColl.On("CountDocuments", ctx, expectedCountFilter).Return(int64(0), nil)
 
-		mockColl.On("InsertOne", ctx, docMatcher).Return(nil, errors.New("database error"))
+		mockColl.On("InsertOne", ctx, docMatcher).Return(nil, err)
 
 		userSvc := &userSvc{}
 		result, err := userSvc.CreateUser(ctx, newUser)
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
-		assert.Contains(t, err.Error(), "database error")
+		assert.ErrorAs(t, err, &err)
 		mockColl.AssertExpectations(t)
 	})
 }
@@ -348,17 +349,17 @@ func TestDeleteUser(t *testing.T) {
 	t.Run("database error", func(t *testing.T) {
 		mockColl := userMocks.NewMockUserCollection(t)
 		ctx := createContextWithMockCollection(mockColl)
-
+		err := errors.New("database error")
 		userID := "test-user-id"
 		expectedFilter := bson.M{"user_id": userID}
-		mockColl.On("DeleteOne", ctx, expectedFilter).Return(nil, errors.New("database error"))
+		mockColl.On("DeleteOne", ctx, expectedFilter).Return(nil, err)
 
 		userSvc := &userSvc{}
 		success, err := userSvc.DeleteUser(ctx, userID)
 
 		assert.Error(t, err)
 		assert.False(t, success)
-		assert.Contains(t, err.Error(), "database error")
+		assert.ErrorAs(t, err, &err)
 		mockColl.AssertExpectations(t)
 	})
 }
