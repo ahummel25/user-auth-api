@@ -98,13 +98,24 @@ func (m *DBManager) getDBConnection(ctx context.Context) (*mongo.Client, error) 
 	encodedSessionToken := url.QueryEscape(creds.SessionToken)
 
 	// Construct MongoDB connection string with encoded IAM credentials
-	dsn := fmt.Sprintf("mongodb+srv://%s:%s@%s.%s/?authSource=%%24external&authMechanism=MONGODB-AWS&retryWrites=true&w=majority&authMechanismProperties=AWS_SESSION_TOKEN:%s&appName=%s&readPreference=secondary&ssl=true&logLevel=1",
+	dsn := fmt.Sprintf(
+		"mongodb+srv://%s:%s@%s.%s/?"+
+			"authSource=%%24external&"+
+			"authMechanism=MONGODB-AWS&"+
+			"retryWrites=true&"+
+			"w=majority&"+
+			"authMechanismProperties=AWS_SESSION_TOKEN:%s&"+
+			"appName=%s&"+
+			"readPreference=secondary&"+
+			"ssl=true&"+
+			"logLevel=1",
 		encodedAccessKeyID,
 		encodedSecretAccessKey,
 		cfg.Cluster,
 		cfg.Domain,
 		encodedSessionToken,
-		cfg.AppName)
+		cfg.AppName,
+	)
 
 	clientOptions := options.Client().
 		ApplyURI(dsn).
