@@ -1,13 +1,16 @@
-with-expecter: True
-inpackage: True
+disable-version-string: True
 issue-845-fix: True
-mockname: "Mock{{.InterfaceName}}"
-outpkg: "{{.PackageName}}"
-filename: "{{.InterfaceName}}.go"
-all: True
+log-level: "info"
 resolve-type-alias: False
+with-expecter: True
 packages:
   github.com/ahummel25/user-auth-api/service/user:
     config:
+      all: True
       dir: "service/user/mocks"
       recursive: True
+      inpackage: False
+      with-expecter: True
+      filename: "{{.InterfaceName}}.go"
+      mockname: "Mock{{.InterfaceName}}"
+      outpkg: "mocks"

@@ -79,7 +79,7 @@ func (u *userSvc) Login(ctx context.Context, usernameOrEmail string, password st
 	if err = updateLastLoginDate(ctx, userCollection, user.UserID, now); err != nil {
 		// Set last_login_date to the previously fetched value and log the error, but don't fail the login process
 		now = user.LastLoginDate.UTC()
-		slog.Error("Failed to update last_login_date", "error", err)
+		slog.Error("Failed to update last_login_date", "error", err, "user_id", user.UserID)
 	}
 
 	loggedInUser := &model.User{

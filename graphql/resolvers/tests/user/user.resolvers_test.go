@@ -9,6 +9,7 @@ import (
 
 	"github.com/99designs/gqlgen/client"
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -91,7 +92,10 @@ func setup(t *testing.T) (*client.Client, *userMocks.MockAPI) {
 	cfg := generated.Config{Resolvers: &mockResolvers}
 	cfg.Directives.Binding = directives.Binding
 	cfg.Directives.HasRole = directives.HasRole
-	c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(cfg)))
+	srv := handler.New(generated.NewExecutableSchema(cfg))
+	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.POST{})
+	c := client.New(srv)
 	return c, mockUserService
 }
 
