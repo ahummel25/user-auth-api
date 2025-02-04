@@ -26,11 +26,6 @@ type config struct {
 // configCtxKey is the context key for the Config value stored in the context
 type configCtxKey struct{}
 
-// GetConfigKey is a wrapper function around the configCtxKey returning a pointer to that value
-func GetConfigKey() *configCtxKey {
-	return &configCtxKey{}
-}
-
 // envConfigSupplier exists as a function receiver to implement the GetConfig interface function
 type envConfigSupplier struct {
 	// It can literally be an empty struct since it doesn't need to store any state!
@@ -40,12 +35,24 @@ var (
 	cfg            *config
 	secretCache, _ = secretcache.New()
 	once           sync.Once
-	err            error
 )
 
 // GetConfig retrieves cached configuration secrets
 func (cs *envConfigSupplier) GetConfig() (config, error) {
+	var err error
 	once.Do(func() {
+		// For local development, read directly from environment variables
+		if os.Getenv("AWS_LAMBDA_FUNCTION_NAME") == "" {
+			cfg = &config{
+				AppName:    os.Getenv("APP_NAME"),
+				IAMRoleARN: os.Getenv("IAM_ROLE_ARN"),
+				Cluster:    os.Getenv("DB_CLUSTER_NAME"),
+				Domain:     os.Getenv("DB_DOMAIN"),
+			}
+			return
+		}
+
+		// For production, use AWS Secrets Manager
 		secretString, secretErr := secretCache.GetSecretString(os.Getenv("SECRET_NAME"))
 		if secretErr != nil {
 			err = secretErr
@@ -66,12 +73,12 @@ func (cs *envConfigSupplier) GetConfig() (config, error) {
 
 // NewContext returns a new context containing the config
 func NewContext(ctx context.Context, s Supplier) context.Context {
-	return context.WithValue(ctx, GetConfigKey(), s)
+	return context.WithValue(ctx, configCtxKey{}, s)
 }
 
 // FromContext returns the config that was stored in the context, or a new one if none was stored
 func FromContext(ctx context.Context) (Supplier, error) {
-	if s, ok := ctx.Value(GetConfigKey()).(Supplier); ok {
+	if s, ok := ctx.Value(configCtxKey{}).(Supplier); ok {
 		return s, nil
 	}
 	return &envConfigSupplier{}, nil
