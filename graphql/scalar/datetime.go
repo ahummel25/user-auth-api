@@ -10,7 +10,7 @@ import (
 
 func MarshalDateTime(t time.Time) graphql.Marshaler {
 	return graphql.WriterFunc(func(w io.Writer) {
-		io.WriteString(w, fmt.Sprintf("%q", t.Format(time.RFC3339)))
+		_, _ = io.WriteString(w, fmt.Sprintf("%q", t.Format(time.RFC3339)))
 	})
 }
 

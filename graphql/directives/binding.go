@@ -21,7 +21,7 @@ func init() {
 	en := enLocale.New()
 	uni := ut.New(en, en)
 	trans, _ = uni.GetTranslator("en")
-	enTranslations.RegisterDefaultTranslations(validate, trans)
+	_ = enTranslations.RegisterDefaultTranslations(validate, trans)
 }
 
 // Binding implements the binding directive function and handles any field or input validation errors
@@ -51,5 +51,5 @@ func ValidateAddTranslation(tag string, message string) {
 		t, _ := utTrans.T(tag, fe.Field())
 		return t
 	}
-	validate.RegisterTranslation(tag, trans, registerFunc, translationFunc)
+	_ = validate.RegisterTranslation(tag, trans, registerFunc, translationFunc)
 }

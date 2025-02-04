@@ -1,4 +1,4 @@
-handler: my.bootstrap.file
+handler: bootstrap
 package:
     artifact: ./build/packages/graphql.zip
 description: Function to handle requests against the API GraphQL schema
@@ -16,5 +16,5 @@ events:
           method: POST
           path: graphql
 role: 'arn:aws:iam::${aws:accountId}:role/${self:service}-lambda-role'
-timeout: 30
+timeout: 29
 #vpc: ${self:custom.vpc}

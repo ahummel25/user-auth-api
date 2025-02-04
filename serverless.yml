@@ -45,7 +45,7 @@ provider:
     tags:
         Application: API
         Project: Personal API
-    timeout: 10
+    timeout: 30
 
 package:
     patterns:
