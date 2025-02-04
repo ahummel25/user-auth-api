@@ -4,13 +4,20 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/awslabs/aws-lambda-go-api-proxy/core"
 	"github.com/awslabs/aws-lambda-go-api-proxy/gorillamux"
 	"github.com/gorilla/mux"
+	"github.com/vektah/gqlparser/v2/ast"
 
+	"time"
+
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/lru"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/ahummel25/user-auth-api/db"
 	"github.com/ahummel25/user-auth-api/graphql/directives"
 	"github.com/ahummel25/user-auth-api/graphql/generated"
@@ -26,6 +33,31 @@ var muxAdapter *gorillamux.GorillaMuxAdapter
 
 func defaultTranslation() {
 	directives.ValidateAddTranslation("email", " must be a valid email address")
+}
+
+// newServer creates a GraphQL server with common configurations
+func newServer(es graphql.ExecutableSchema) *handler.Server {
+	srv := handler.New(es)
+
+	// Add transports in order of preference
+	srv.AddTransport(transport.Websocket{
+		KeepAlivePingInterval: 10 * time.Second,
+	})
+	srv.AddTransport(transport.Options{})
+	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.POST{})
+	srv.AddTransport(transport.MultipartForm{})
+
+	// Set up query cache
+	srv.SetQueryCache(lru.New[*ast.QueryDocument](1000))
+
+	// Add extensions
+	srv.Use(extension.Introspection{})
+	srv.Use(extension.AutomaticPersistedQuery{
+		Cache: lru.New[string](100),
+	})
+
+	return srv
 }
 
 func init() {
@@ -49,7 +81,7 @@ func init() {
 	cfg.Directives.Binding = directives.Binding
 	cfg.Directives.HasRole = directives.HasRole
 	schema := generated.NewExecutableSchema(cfg)
-	server := handler.NewDefaultServer(schema)
+	server := newServer(schema)
 
 	r.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))
 	r.Handle("/apollo", playground.ApolloSandboxHandler("GraphQL Apollo playground", "/graphql"))
