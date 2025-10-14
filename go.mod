@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.29.14
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.67
 	github.com/aws/aws-sdk-go-v2/service/sts v1.33.19
-	github.com/aws/aws-secretsmanager-caching-go/v2 v2.1.0
+	github.com/aws/aws-secretsmanager-caching-go/v2 v2.1.1
 	github.com/awslabs/aws-lambda-go-api-proxy v0.16.2
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/locales v0.14.1

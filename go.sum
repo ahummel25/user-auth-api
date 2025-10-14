@@ -40,6 +40,8 @@ github.com/aws/aws-sdk-go-v2/service/sts v1.33.19 h1:1XuUZ8mYJw9B6lzAkXhqHlJd/Xv
 github.com/aws/aws-sdk-go-v2/service/sts v1.33.19/go.mod h1:cQnB8CUnxbMU82JvlqjKR2HBOm3fe9pWorWBza6MBJ4=
 github.com/aws/aws-secretsmanager-caching-go/v2 v2.1.0 h1:+DphFvx1sYWtLgra29LwcAVP+lRKHFTxctgi3IIi8cc=
 github.com/aws/aws-secretsmanager-caching-go/v2 v2.1.0/go.mod h1:6JsBUHrMc1eO8YTMQ1ujHPB/ffNm5tu38AikGkqHQZ8=
+github.com/aws/aws-secretsmanager-caching-go/v2 v2.1.1 h1:L1s6e1t52MWZ2S+96AF7Si+SQy7BqQnllGHgLwdQy/I=
+github.com/aws/aws-secretsmanager-caching-go/v2 v2.1.1/go.mod h1:tI92REdzBEWATJHIqIVBk/L/9l6XPGj0Xallezr2fPQ=
 github.com/aws/smithy-go v1.22.3 h1:Z//5NuZCSW6R4PhQ93hShNbyBbn8BWCmCVCt+Q8Io5k=
 github.com/aws/smithy-go v1.22.3/go.mod h1:t1ufH5HMublsJYulve2RKmHDC15xu1f26kHCp/HgceI=
 github.com/awslabs/aws-lambda-go-api-proxy v0.16.2 h1:CJyGEyO1CIwOnXTU40urf0mchf6t3voxpvUDikOU9LY=
