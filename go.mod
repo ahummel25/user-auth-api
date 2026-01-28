@@ -19,7 +19,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/stretchr/testify v1.11.1
 	github.com/vektah/gqlparser/v2 v2.5.31
-	go.mongodb.org/mongo-driver/v2 v2.4.2
+	go.mongodb.org/mongo-driver/v2 v2.5.0
 	golang.org/x/crypto v0.47.0
 )
 
