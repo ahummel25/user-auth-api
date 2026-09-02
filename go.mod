@@ -1,10 +1,10 @@
 module github.com/ahummel25/user-auth-api
 
-go 1.24.0
+go 1.26
 
 require (
 	github.com/99designs/gqlgen v0.17.86
-	github.com/aws/aws-lambda-go v1.52.0
+	github.com/aws/aws-lambda-go v1.55.0
 	github.com/aws/aws-sdk-go-v2 v1.41.1
 	github.com/aws/aws-sdk-go-v2/config v1.32.7
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.7
